@@ -1,59 +1,41 @@
 import documentElement from './documentElement.js   '
-import { ref, reactive } from './vue.esm-browser.js'
-
-function useDocumentElements(){
-    let documentElements = reactive([
-        {
-            width: 100,
-            height: 130,
-            pos_x: 10,
-            pos_y: 20,
-            id: 1
-        },
-        {
-            width: 30,
-            height: 40,
-            pos_x: 200,
-            pos_y: 30,
-            id: 2
-        },
-        {
-            width: 140,
-            height: 50,
-            pos_x: 200,
-            pos_y: 40,
-            id: 3
-        }
-    ]);
-    
-    function getDocumentElementById(id){
-        const elementToGet = documentElements.find(element => element.id === id)
-        return elementToGet;
-    };
-
-    //function to move elements
-    //function to end move
-    function moveElementBy(id,pos_diff){
-        const {pos_x_diff, pos_y_diff} = pos_diff;
-        const elementToMove = getDocumentElementById(id);
-        elementToMove.pos_x += pos_x_diff;
-        elementToMove.pos_y += pos_y_diff;
-    }
-
-    return {
-        documentElements,
-        moveElementBy
-    }
-}
+import documentElementResizers from './documentElementResizers.js'
+import useDocumentElements from './useDocumentElements.js'
+import { ref, reactive, computed } from './vue.esm-browser.js'
 
 export default {
     name:'app',
     components:{
-        'document-element':documentElement
+        'document-element':documentElement,
+        'document-element-resizer': documentElementResizers
     },
-    setup(props){
-        const {documentElements, moveElementBy} = useDocumentElements();
-        return {documentElements, moveElementBy}
+    setup(props, context){
+        const { documentElements, moveElementBy } = useDocumentElements();
+
+        
+        const resizerIsVisible = computed(
+            ()=> selectedElement !== null
+        );
+
+        const isDragging = ref(false);
+
+        const pos_mousedown = reactive({
+            clientpos_x: null,
+            clientpos_y: null    
+        })
+
+        
+        
+        const selectedElement = reactive({});
+        
+        return {
+            documentElements, 
+            moveElementBy,
+            resizerIsVisible,
+            isDragging,
+
+            pos_mousedown
+        }
     },
     data:function(){
         return {
@@ -62,14 +44,7 @@ export default {
                 pos_y:0,
                 width:1000, 
                 height:1000
-            },
-            dragInProgress:false,
-            pos_mousedown:{
-                clientpos_x:null,
-                clientpos_y:null
-            },
-            isdragging:false,
-            selectedElement:null
+            }
         };   
     },
     methods:{
@@ -91,7 +66,7 @@ export default {
         mouseup(event){
             this.isdragging = false; 
         },
-        setMousedown(event,rectSpec){
+        setMousedownHandler(event,rectSpec){
             this.selectedElement = rectSpec.id;
         }
     },
@@ -107,8 +82,15 @@ export default {
             v-for="documentElement in documentElements" 
             :rectSpec="documentElement"
             :key="documentElement.id"
-            @mousedown-on-document-element="setMousedown"
+            @mousedown-on-document-element="setMousedownHandler"
         ></document-element>
+        
+        <div v-if="resizerIsVisible">
+            <document-element-resizer v-for="resizer in resizers"
+                :posSpec="resizer.pos"
+                :key="resizer.id"
+                ></document-element-resizer>
+        </div>
     </div>
     `
 }

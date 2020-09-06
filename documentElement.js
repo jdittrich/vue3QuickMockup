@@ -1,5 +1,6 @@
 //import data element for data on canvas
-
+//import: set dragDrop Strategy
+//
 
 
 export default {
