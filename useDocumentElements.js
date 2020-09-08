@@ -1,4 +1,4 @@
-import {reactive} from './vue.esm-browser.js'
+import {reactive, ref} from './vue.esm-browser.js'
 
 let documentElements = reactive([
     {
@@ -24,7 +24,7 @@ let documentElements = reactive([
     }
 ]);
 
-let selectedElement = ref({});
+let selectedElementId = ref(null);
 
 function useDocumentElements() {
    
@@ -33,8 +33,11 @@ function useDocumentElements() {
         return elementToGet;
     };
 
-    //function to move elements
-    //function to end move
+    function moveSelectedElementBy(pos_diff){
+        const selectedId = selectedElementId;
+        moveElementBy(selectedId, pos_diff);        
+    }
+
     function moveElementBy(id, pos_diff) {
         const { pos_x_diff, pos_y_diff } = pos_diff;
         const elementToMove = getDocumentElementById(id);
@@ -42,19 +45,16 @@ function useDocumentElements() {
         elementToMove.pos_y += pos_y_diff;
     }
 
-    function setSelectedElement(newSelectedElement){
-        selectedElement = newSelectedElement    
+    function setSelectedElementId(newSelectedElementId){
+        selectedElementId = newSelectedElementId;    
     }
 
-    function getSelectedElement(){
-        return selectedElement
-    }
 
     return {
         documentElements,
-        selectedElement,
-        setSelectedElement,
-        moveElementBy
+        setSelectedElementId,
+        moveElementBy,
+        moveSelectedElementBy
     }
 }
 

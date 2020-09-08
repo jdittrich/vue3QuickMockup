@@ -1,7 +1,9 @@
 import documentElement from './documentElement.js   '
 import documentElementResizers from './documentElementResizers.js'
 import useDocumentElements from './useDocumentElements.js'
-import { ref, reactive, computed } from './vue.esm-browser.js'
+//import { ref, reactive, computed } from './vue.esm-browser.js'
+import {mouseEventProxy, setMouseEventStrategy} from './mouseEventProxy.js'
+import {mousemoveDragStrategy} from './elementDragStrategy.js'
 
 export default {
     name:'app',
@@ -10,31 +12,12 @@ export default {
         'document-element-resizer': documentElementResizers
     },
     setup(props, context){
-        const { documentElements, moveElementBy } = useDocumentElements();
-
-        
-        const resizerIsVisible = computed(
-            ()=> selectedElement !== null
-        );
-
-        const isDragging = ref(false);
-
-        const pos_mousedown = reactive({
-            clientpos_x: null,
-            clientpos_y: null    
-        })
-
-        
-        
-        const selectedElement = reactive({});
+        const { documentElements, moveElementBy, setSelectedElementId } = useDocumentElements();
         
         return {
             documentElements, 
             moveElementBy,
-            resizerIsVisible,
-            isDragging,
-
-            pos_mousedown
+            setSelectedElementId
         }
     },
     data:function(){
@@ -49,25 +32,22 @@ export default {
     },
     methods:{
         mousedown(event){
-            this.pos_mousedown={
-                clientpos_x : event.clientX,
-                clientpos_y : event.clientY
-            }
-            this.isdragging = true; 
+            mouseEventProxy.mousedown(event);
         },
         mousemove(event){
-            if(this.isdragging){
-                const pos_x_diff = event.movementX;
-                const pos_y_diff = event.movementY;
-
-                this.moveElementBy(this.selectedElement, { pos_x_diff, pos_y_diff})
-            }
+            mouseEventProxy.mousemove(event);
         },
         mouseup(event){
-            this.isdragging = false; 
+            mouseEventProxy.mouseup(event)
         },
         setMousedownHandler(event,rectSpec){
-            this.selectedElement = rectSpec.id;
+            this.setSelectedElementId(rectSpec.id);
+            
+            setMouseEventStrategy({
+                mousedown: function () { },
+                mousemove: mousemoveDragStrategy,
+                mouseup: function () { }
+            })
         }
     },
     template:`
