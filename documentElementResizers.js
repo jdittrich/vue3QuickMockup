@@ -30,3 +30,11 @@ export default {
     </div>
     `
 }
+
+
+
+/*
+start:set strategies 
+move: resize selected
+drop: end resize
+*/
