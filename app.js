@@ -1,4 +1,4 @@
-import documentElement from './documentElement.js   '
+import documentElement from './documentElement.js'
 import documentElementResizers from './documentElementResizers.js'
 import useDocumentElements from './useDocumentElements.js'
 //import { ref, reactive, computed } from './vue.esm-browser.js'
@@ -9,15 +9,16 @@ export default {
     name:'app',
     components:{
         'document-element':documentElement,
-        'document-element-resizer': documentElementResizers
+        'document-element-resizers': documentElementResizers
     },
     setup(props, context){
-        const { documentElements, moveElementBy, setSelectedElementId } = useDocumentElements();
+        const { documentElements, setSelectedElementId, selectedElementId, selectedElement  } = useDocumentElements();
         
         return {
             documentElements, 
-            moveElementBy,
-            setSelectedElementId
+            setSelectedElementId,
+            selectedElementId,
+            selectedElement
         }
     },
     data:function(){
@@ -57,7 +58,9 @@ export default {
         v-on:mousemove.left="mousemove"
         v-on:mouseup = "mouseup"
         >
-        
+        Selected: {{selectedElementId}}
+
+      
         <document-element 
             v-for="documentElement in documentElements" 
             :rectSpec="documentElement"
@@ -65,12 +68,8 @@ export default {
             @mousedown-on-document-element="setMousedownHandler"
         ></document-element>
         
-        <div v-if="resizerIsVisible">
-            <document-element-resizer v-for="resizer in resizers"
-                :posSpec="resizer.pos"
-                :key="resizer.id"
-                ></document-element-resizer>
-        </div>
+        <document-element-resizers v-if="selectedElement" :selectedElement="selectedElement"></document-element-resizers>
+
     </div>
     `
 }
