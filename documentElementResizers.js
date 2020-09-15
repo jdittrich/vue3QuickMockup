@@ -1,4 +1,6 @@
 import documentElementResizer from './documentElementResizer.js'
+import {direction_constraint_horizontal, direction_constraint_horizontal, direction_constraint_vertical} from './variables.js'
+
 
 export default {
     name:'document-element-resizers',
@@ -13,46 +15,54 @@ export default {
             resizerHandles:[
                 {   //↑
                     position:{
-                        'top':0
-                    }
+                        'bottom':'100%',
+                        'left':'calc(50% - 5px)'
+                    },
+                    constraint:direction_constraint_vertical
                 },
                 {   //⭧
                     position:{
-                        'top':0,
-                        'right':0
+                        'bottom':'100%',
+                        'left':'100%'
                     }
                 },
                 {   //→
                     position:{
-                        'right':0
-                    }
+                        'left':'100%',
+                        top:'calc(50% - 5px)'
+                    },
+                    constraint:direction_constraint_horizontal
                 },
                 {   //⭨
                     position:{
-                        'right':0,
-                        'bottom':0
+                        'left':'100%',
+                        'top':'100%'
                     }
                 },
                 {   //↓
                     position:{
-                        'bottom':0
-                    }
+                        'top':'100%',
+                        'left':'calc(50% - 5px)'
+                    },
+                    constraint:direction_constraint_vertical
                 },
                 {   //⭩
                     position:{
-                        'bottom':0,
-                        'left':0
+                        'top':'100%',
+                        'right':'100%'
                     }
                 },
                 {   //←
                     position:{
-                        'left':0
-                    }
+                        'right':'100%',
+                        'top':'calc(50% - 5px)'        
+                    },
+                    constraint:direction_constraint_horizontal
                 },
                 {   //⭦
                     position:{
-                        'top':0,
-                        'left':0
+                        'bottom':'100%',
+                        'right':'100%'
                     }
                 },  
             ]
