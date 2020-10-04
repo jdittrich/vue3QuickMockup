@@ -3,7 +3,7 @@ import documentElementResizers from './documentElementResizers.js'
 import useDocumentElements from './useDocumentElements.js'
 //import { ref, reactive, computed } from './vue.esm-browser.js'
 import {mouseEventProxy, setMouseEventStrategy} from './mouseEventProxy.js'
-import {mousemoveDragStrategy} from './elementDragStrategy.js'
+import { dragStrategy} from './elementDragStrategy.js'
 
 export default {
     name:'app',
@@ -41,14 +41,10 @@ export default {
         mouseup(event){
             mouseEventProxy.mouseup(event)
         },
-        setMousedownHandler(event,rectSpec){
+        setMouseeventHandlers(event,rectSpec){
             this.setSelectedElementId(rectSpec.id);
             
-            setMouseEventStrategy({
-                mousedown: function () { },
-                mousemove: mousemoveDragStrategy,
-                mouseup: function () { }
-            })
+            setMouseEventStrategy(dragStrategy)
         }
     },
     template:`
@@ -65,7 +61,7 @@ export default {
             v-for="documentElement in documentElements" 
             :rectSpec="documentElement"
             :key="documentElement.id"
-            @mousedown-on-document-element="setMousedownHandler"
+            @mousedown-on-document-element="setMouseeventHandlers"
         ></document-element>
         
         <document-element-resizers v-if="selectedElement" :selectedElement="selectedElement"></document-element-resizers>

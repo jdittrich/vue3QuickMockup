@@ -1,5 +1,5 @@
 import documentElementResizer from './documentElementResizer.js'
-import {direction_constraint_horizontal, direction_constraint_horizontal, direction_constraint_vertical} from './variables.js'
+import {direction_constraint_horizontal, direction_constraint_vertical} from './variables.js'
 
 
 export default {
@@ -12,59 +12,37 @@ export default {
     ],
     data:function(){
         return {
-            resizerHandles:[
-                {   //↑
-                    position:{
-                        'bottom':'100%',
-                        'left':'calc(50% - 5px)'
-                    },
-                    constraint:direction_constraint_vertical
+            resizerHandles: [
+                { // 🡱 
+                    'top': true,
                 },
-                {   //⭧
-                    position:{
-                        'bottom':'100%',
-                        'left':'100%'
-                    }
+                { //🡵
+                    'top': true,
+                    'right': true
                 },
-                {   //→
-                    position:{
-                        'left':'100%',
-                        top:'calc(50% - 5px)'
-                    },
-                    constraint:direction_constraint_horizontal
+                { //🡲
+                    'right': true,
                 },
-                {   //⭨
-                    position:{
-                        'left':'100%',
-                        'top':'100%'
-                    }
+                { //🡶
+                    'right': true,
+                    'bottom': true
                 },
-                {   //↓
-                    position:{
-                        'top':'100%',
-                        'left':'calc(50% - 5px)'
-                    },
-                    constraint:direction_constraint_vertical
+                { //🡳
+                    'bottom': true,
                 },
-                {   //⭩
-                    position:{
-                        'top':'100%',
-                        'right':'100%'
-                    }
+                { //🡷
+
+                    'left': true,
+                    'bottom': true
+
                 },
-                {   //←
-                    position:{
-                        'right':'100%',
-                        'top':'calc(50% - 5px)'        
-                    },
-                    constraint:direction_constraint_horizontal
+                { //🡰 
+                    'left': true,
                 },
-                {   //⭦
-                    position:{
-                        'bottom':'100%',
-                        'right':'100%'
-                    }
-                },  
+                { //🡴
+                    'top': true,
+                    'left': true
+                },
             ]
         }
     },
@@ -83,7 +61,7 @@ export default {
         }
     },
     template:`
-    <div :style="styleObject" @mousedown="onmousedown">
+    <div :style="styleObject">
         <document-element-resizer v-for="resizerHandle in resizerHandles" :resizerHandleSpec="resizerHandle" ></document-element-resizer>         
     </div>
     `

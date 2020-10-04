@@ -10,7 +10,26 @@ export default {
     ],
     computed:{
         styleObject:function(){
-            const positionObject = toRaw(this.resizerHandleSpec.position);
+            const positionObject = toRaw(this.resizerHandleSpec);
+
+            let positionStyles = {
+                'top':'calc(50% - 5px)',
+                'left': 'calc(50% - 5px)'
+            };
+
+            if(positionObject.top === true){
+                positionStyles.top="-10px";                
+            };
+            if (positionObject.right === true) {
+                positionStyles.left = "100%";
+            };
+            if (positionObject.bottom === true) {
+                positionStyles.top = "100%";
+            };
+            if (positionObject.left === true) {
+                positionStyles.left = "-10px";
+            };
+
 
             const generalStyles = {
                 'height':'10px',
@@ -21,12 +40,12 @@ export default {
                 'outline':'1px solid rgb(0,200,100)' 
             }
 
-            return Object.assign({},generalStyles,positionObject);
+            return Object.assign({}, generalStyles, positionStyles);
         }
     },
     methods:{
         onmousedown:function(evt){
-            this.$emit('mousedown-on-document-element-resizer',evt,this.resizeHandle)    
+            this.$emit('mousedown-on-document-element-resizer',evt,this.resizeHandleSpec)    
         }
     },
     template:`
