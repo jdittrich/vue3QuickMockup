@@ -2,7 +2,7 @@ import documentElement from './documentElement.js'
 import documentElementResizers from './documentElementResizers.js'
 import useDocumentElements from './useDocumentElements.js'
 //import { ref, reactive, computed } from './vue.esm-browser.js'
-import {mouseEventProxy, setMouseEventStrategy} from './mouseEventProxy.js'
+import {mouseEventProxy, setPointerEventStrategy} from './mouseEventProxy.js'
 import { dragStrategy} from './elementDragStrategy.js'
 
 export default {
@@ -42,10 +42,11 @@ export default {
             mouseEventProxy.mouseup(event)
         },
         setMouseeventHandlers(event,rectSpec){
+        
             this.setSelectedElementId(rectSpec.id);
             
-            setMouseEventStrategy(dragStrategy)
-        }
+            setPointerEventStrategy(dragStrategy)//what about setting additional arguments beyond the event here?
+        }   
     },
     template:`
     <div style='width:95%; height:95%; background-color:#ABC; position:absolute;'
