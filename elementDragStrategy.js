@@ -3,18 +3,17 @@ import useDocumentElements from './useDocumentElements.js'
 
 let documentElements = useDocumentElements();
 
-let dragStrategy = {
-    mousedown:function() { },
-    mousemove: function (event, isDragging){
-        if(!isDragging){ return };
-        const pos_x_diff = event.movementX;
-        const pos_y_diff = event.movementY;
-
+let elementDragStrategy = {
+    down:function() { },
+    move: function (qmEvent, options){
+        if (!qmEvent.isDragging){ return };
+        const pos_x_diff = qmEvent.pos_x_diff;
+        const pos_y_diff = qmEvent.pos_y_diff;
         documentElements.moveSelectedElementBy({ pos_x_diff, pos_y_diff });
     },
-    mouseup:function() {
+    up:function() {
     }
 };
 
 
-export {dragStrategy}
+export {elementDragStrategy}

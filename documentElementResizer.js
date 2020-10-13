@@ -1,4 +1,6 @@
 import {toRaw} from './vue.esm-browser.js'
+import {setPointerEventStrategy} from './pointerEventProxy.js'
+import {elementResizeStrategy} from './elementResizeStrategy.js'
 
 export default {
     name:'document-element-resizers',  
@@ -45,7 +47,7 @@ export default {
     },
     methods:{
         onmousedown:function(evt){
-            this.$emit('mousedown-on-document-element-resizer',evt,this.resizeHandleSpec)    
+            setPointerEventStrategy(elementResizeStrategy, toRaw(this.resizerHandleSpec))
         }
     },
     template:`

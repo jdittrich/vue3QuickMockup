@@ -27,13 +27,15 @@ let documentElements = reactive([
 const selectedElementId = ref("null");
 
 function useDocumentElements() {
-   
+    // HELPERS
     function getDocumentElementById(id) {
         const elementToGet = documentElements.find(element => element.id === id)
         return elementToGet;
     };
 
+    //MOVE ELEMENTS
     function moveSelectedElementBy(pos_diff){
+
         const selectedId = selectedElementId.value;
         moveElementBy(selectedId, pos_diff);        
     }
@@ -45,8 +47,50 @@ function useDocumentElements() {
         elementToMove.pos_y += pos_y_diff;
     }
 
+    //RESIZE ELEMENTS
+    function resizeSelectedElementBy(pos_diff,sides){
+        const selectedId = selectedElementId.value;
+        resizeElementBy(selectedId, pos_diff,sides);     
+    }
+    
+    function resizeElementBy(id,pos_diff,sides){     
+        const { pos_x_diff, pos_y_diff } = pos_diff;
+        const elementToResize = getDocumentElementById(id);
+
+        //if top is selected
+        if(sides.top===true){
+            //change top position
+            elementToResize.pos_y += pos_y_diff;
+            //change height inverse proportionally, so that bottom does not move
+            elementToResize.height -= pos_y_diff;
+        }
+    
+       //if right is selected
+        if(sides.right === true){
+            //change width proportially
+            elementToResize.width += pos_x_diff; 
+       }
+       
+       //if bottom is selected
+       if(sides.bottom === true){
+            // change height proportially
+           elementToResize.height += pos_y_diff
+       }
+    
+    
+       //if left is selected
+       if(sides.left === true){
+           //change left position proportionally
+           elementToResize.pos_x += pos_x_diff;
+           
+           //change width inverse proportially so that the right does not move. 
+           element.width -= pos_x_diff;
+       }
+    }
+
+
+
     function setSelectedElementId(newSelectedElementId){
-        console.log("selectedElementId")
         selectedElementId.value = newSelectedElementId;    
     }
 
@@ -66,7 +110,8 @@ function useDocumentElements() {
         setSelectedElementId,
         selectedElementId,
         selectedElement,
-        moveSelectedElementBy
+        moveSelectedElementBy,
+        resizeSelectedElementBy
     }
 }
 

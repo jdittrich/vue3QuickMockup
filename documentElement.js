@@ -1,7 +1,8 @@
-//import data element for data on canvas
-//import: set dragDrop Strategy
-//
+import { setPointerEventStrategy } from './pointerEventProxy.js'
+import { elementDragStrategy } from './elementDragStrategy.js'
+import useDocumentElements from './useDocumentElements.js'
 
+const {setSelectedElementId} = useDocumentElements()
 
 export default {
     name:'document-element',
@@ -25,7 +26,8 @@ export default {
     },
     methods:{
         onmousedown:function(evt){
-            this.$emit('mousedown-on-document-element',evt,this.rectSpec)    
+            setSelectedElementId(this.rectSpec.id)
+            setPointerEventStrategy(elementDragStrategy)  
         }
     },
     template:`

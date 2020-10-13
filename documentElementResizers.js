@@ -1,5 +1,4 @@
 import documentElementResizer from './documentElementResizer.js'
-import {direction_constraint_horizontal, direction_constraint_vertical} from './variables.js'
 
 
 export default {

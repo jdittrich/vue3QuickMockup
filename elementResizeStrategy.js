@@ -3,17 +3,21 @@ import useDocumentElements from './useDocumentElements.js'
 
 let documentElements = useDocumentElements();
 
-let dragStrategy = {
-    mousedown: function () { },
-    mousemove: function (event, isDragging, posMousedown, options) {
-        if (!isDragging) { return };
-        const pos_x_diff = event.movementX;
-        const pos_y_diff = event.movementY;
-        useDocumentElements.resizeSelectedElementBy({ pos_x_diff, pos_y_diff },sides)       
+const elementResizeStrategy = {
+    down: function () {},
+    move: function (qmevent, options) { //options carries the spec which handler has been dragged based on booleans on top, right, bottom, left.
+        if (!qmevent.isDragging) {
+            return
+        };
+        const pos_x_diff = qmevent.pos_x_diff;
+        const pos_y_diff = qmevent.pos_y_diff;
+        documentElements.resizeSelectedElementBy({
+            pos_x_diff,
+            pos_y_diff
+        }, options)
     },
-    mouseup: function () {
-    }
+    up: function () {}
 };
 
 
-export { dragStrategy }
+export {elementResizeStrategy}
