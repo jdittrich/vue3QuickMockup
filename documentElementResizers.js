@@ -1,6 +1,10 @@
 import documentElementResizer from './documentElementResizer.js'
 
-
+/**
+ * Holds all the resizer handles. See (documentElementResizer.js)
+ * Also creates the "selected" effect using 'background-color':'rgba(0,100,250,0.3)', (The effect/data for it probably should reside within the elements or in some other overlay, not here, eventually)
+ * Mouse events are not captured by it but passed "through" via pointer-events:none (except you click a child element which stops this behavior, like a resizer)
+*/
 export default {
     name:'document-element-resizers',
     components:{

@@ -3,6 +3,11 @@ import useDocumentElements from './useDocumentElements.js'
 
 let documentElements = useDocumentElements();
 
+/**
+ * pointer strategy (called via pointerEventProxy)
+ * Used e.g. when resizing documentElements (see useDocumentElements (model) and documentElement (view)) via handles (see documentElementResizer) 
+ */
+
 const elementResizeStrategy = {
     down: function () {},
     move: function (qmevent, options) { //options carries the spec which handler has been dragged based on booleans on top, right, bottom, left.

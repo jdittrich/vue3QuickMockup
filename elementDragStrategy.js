@@ -3,6 +3,11 @@ import useDocumentElements from './useDocumentElements.js'
 
 let documentElements = useDocumentElements();
 
+/**
+ * pointer strategy (called via pointerEventProxy)
+ * Used e.g. when moving documentElements (see useDocumentElements (model) and documentElement (view))
+ */
+
 let elementDragStrategy = {
     down:function() { },
     move: function (qmEvent, options){

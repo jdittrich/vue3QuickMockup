@@ -1,3 +1,11 @@
+/**
+ * Proxies events so that strategies can be swapped out via setPointerEventStrategy
+ */
+
+
+ // create a custom event. Rather similar like a normal mouseEvent with some additional data like
+ // downPoint (the last mousedown)
+ // isDragging 
 function createQmEvent(nativeEvent,{
     downPoint = null,
     isDragging = null
@@ -25,26 +33,32 @@ function createQmEvent(nativeEvent,{
 }
 
 
-//can be passed to move and up events
+//variables shared across events -- local state
+//last mousedown for move and up events
 let pos_down = {
     clientpos_x : null,
     clientpos_y : null
 }
 
+//is dragging for move and up events
 let isDragging = false;
 
-let options = null; 
 //can hold anything that should be passed to the qmevent handlers as the "options" parameter
 //settable via setPointerEventStrategy
+let options = null; 
+
 
 //these is the proxy to the strategies. Proxies  are not changeable, only the strategies.
 let pointerEventProxy = {
     down:function(nativeEvent){
+
+        //set shared state variables
         pos_down = {
             clientpos_x: nativeEvent.clientX,
             clientpos_y: nativeEvent.clientY
         };
         isDragging = true;
+
 
         const qmevent = createQmEvent(nativeEvent, {
             "isDragging":isDragging,
@@ -73,13 +87,15 @@ let pointerEventProxy = {
     }
 }
 
-
-let strategyPointerEvent = {
-    down: function () {},
+//the default: strategy which does nothing
+const emptyStrategy = {
+    down: function () { },
     move: function () { },
-    up: function () {},
-    name:"empty"
+    up: function () { },
+    name: "empty"
 }
+
+let strategyPointerEvent = emptyStrategy;
 
 const setPointerEventStrategy = function (newStrategyPointerEvent, newOptions){
     strategyPointerEvent = newStrategyPointerEvent
@@ -87,11 +103,7 @@ const setPointerEventStrategy = function (newStrategyPointerEvent, newOptions){
 }
 
 const unsetPointerEventStrategy = function(){
-    strategyPointerEvent = {
-        down: function () {},
-        move: function () {},
-        up: function () {},
-        name: "empty"
-    }
+    //set empty default stratgy
+    strategyPointerEvent = emptyStrategy;
 }
 export { pointerEventProxy, setPointerEventStrategy, unsetPointerEventStrategy}

@@ -4,6 +4,12 @@ import useDocumentElements from './useDocumentElements.js'
 
 const {setSelectedElementId} = useDocumentElements()
 
+/*
+A document Element. Despite being meant to represent the content that users manipulate it is currently
+very much empty and only represented by a rectangle. It can be dragged and resized, but all that 
+resides not within it. It only sets the drag strategy if a mousedown happens in it. 
+*/
+
 export default {
     name:'document-element',
     props:{

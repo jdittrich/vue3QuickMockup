@@ -2,6 +2,11 @@ import {toRaw} from './vue.esm-browser.js'
 import {setPointerEventStrategy} from './pointerEventProxy.js'
 import {elementResizeStrategy} from './elementResizeStrategy.js'
 
+/**
+ * document-element-resizer represents one resizer handle
+ * It sets the resize event handling strategy for the app on mouse/pointer "down"-events
+ * It gets is props via the vue object document-element-resizerS  
+ */
 export default {
     name:'document-element-resizers',  
     props:{
