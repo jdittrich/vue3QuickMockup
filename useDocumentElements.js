@@ -94,6 +94,10 @@ function useDocumentElements() {
         selectedElementId.value = newSelectedElementId;    
     }
 
+    function unsetSelectedElementId(){
+        selectedElementId.value = null
+    }
+
     const selectedElement = computed(()=>getDocumentElementById(selectedElementId.value));
     // A note on learning: This only got "activated" aka seen-as-computed when I used .value
     // I tried quite some other things like using watch instead or tried to track the value 
@@ -108,6 +112,7 @@ function useDocumentElements() {
     return {
         documentElements,
         setSelectedElementId,
+        unsetSelectedElementId,
         selectedElementId,
         selectedElement,
         moveSelectedElementBy,

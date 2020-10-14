@@ -1,8 +1,8 @@
 import documentElement from './documentElement.js'
 import documentElementResizers from './documentElementResizers.js'
 import useDocumentElements from './useDocumentElements.js'
-//import { ref, reactive, computed } from './vue.esm-browser.js'
-import { pointerEventProxy} from './pointerEventProxy.js'
+
+import {pointerEventProxy, unsetPointerEventStrategy} from './pointerEventProxy.js'
 
 export default {
     name:'app',
@@ -11,16 +11,17 @@ export default {
         'document-element-resizers': documentElementResizers
     },
     setup(props, context){
-        const { documentElements, setSelectedElementId, selectedElementId, selectedElement  } = useDocumentElements();
+        const { documentElements, setSelectedElementId, unsetSelectedElementId, selectedElementId, selectedElement  } = useDocumentElements();
         
         return {
             documentElements, 
             setSelectedElementId,
+            unsetSelectedElementId,
             selectedElementId,
             selectedElement
         }
     },
-    data:function(){
+    data: function(){
         return {
             canvas:{
                 pos_x:0,
@@ -32,20 +33,18 @@ export default {
     },
     methods:{
         mousedown(event){
-            pointerEventProxy.down(event);
+            if(event.target === this.$el){ //click on background
+                this.unsetSelectedElementId();
+                unsetPointerEventStrategy();
+            }
+            pointerEventProxy.down(event);          
         },
         mousemove(event){
             pointerEventProxy.move(event);
         },
         mouseup(event){
             pointerEventProxy.up(event)
-        },
-        // setPointerEventHandlers(event,rectSpec){
-        
-        //     this.setSelectedElementId(rectSpec.id);
-            
-        //    // setPointerEventStrategy(dragStrategy)//what about setting additional arguments beyond the event here?
-        // }   
+        }, 
     },
     template:`
     <div style='width:95%; height:95%; background-color:#ABC; position:absolute;'
