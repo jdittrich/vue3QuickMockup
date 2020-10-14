@@ -33,7 +33,7 @@ export default {
     },
     methods:{
         mousedown(event){
-            if(event.target === this.$el){ //click on background
+            if(event.target === this.$el){ //click on background. Should probably be outsourced to a separate background element and its reactions
                 this.unsetSelectedElementId();
                 unsetPointerEventStrategy();
             }
