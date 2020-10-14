@@ -84,7 +84,7 @@ function useDocumentElements() {
            elementToResize.pos_x += pos_x_diff;
            
            //change width inverse proportially so that the right does not move. 
-           element.width -= pos_x_diff;
+           elementToResize.width -= pos_x_diff;
        }
     }
 
