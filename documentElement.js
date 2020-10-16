@@ -37,8 +37,15 @@ export default {
         }
     },
     template:`
-    <div :style="styleObject" @mousedown="onmousedown">
+    <div :style="styleObject" @mousedown.self="onmousedown">
     {{rectSpec.id}}
+        <div class="documentElementChildrenContainer">
+            <document-element 
+                v-for="documentElement in rectSpec.children" 
+                :rectSpec = "documentElement"
+                :key="documentElement.id">
+            </document-element> 
+        </div>
     </div>
     `
 }
