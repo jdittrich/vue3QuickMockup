@@ -1,4 +1,4 @@
-import documentElementResizer from './documentElementResizer.js'
+import documentElementResizer from './vDocumentElementResizer.js'
 
 /**
  * Holds all the resizer handles. See (documentElementResizer.js)
