@@ -1,5 +1,5 @@
-import documentElement from './documentElement.js'
-import documentElementResizers from './documentElementResizers.js'
+import documentElement from './vDocumentElement.js'
+import documentElementResizers from './vDocumentElementResizers.js'
 import useDocumentElements from './useDocumentElements.js'
 
 import {pointerEventProxy, unsetPointerEventStrategy} from './pointerEventProxy.js'
@@ -57,7 +57,7 @@ export default {
 
       
         <document-element 
-            v-for="documentElement in documentElements" 
+            v-for="documentElement in documentElements.children" 
             :rectSpec="documentElement"
             :key="documentElement.id"
         ></document-element>
