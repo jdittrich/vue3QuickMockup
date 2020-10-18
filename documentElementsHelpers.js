@@ -4,7 +4,45 @@ function _getParentOf(flatDocumentData, idToSearchFor){
     return parent; 
 };
 
-/** returns all parents and their parents etc.
+/** returns the innermost element which contains the point
+* @param {object} documentElements  - the  document tree
+* @param {object} point - the point in document coordinates
+* @param {number} point.pos_x - the x coordinate of the point
+* @param {number} point.pos_y - the y coordinate of the point
+* @returns {object} the innermost element (in case point applies to several nested elements) which contains the point
+*/
+function _elementPointIsIn(documentElements,point){
+    const flatDocumentData = _getFlatDocumentData(documentElements);
+    const enclosingElements = flatDocumentData.filter(element => _isPointInElement(element,point));
+    
+    //efficient way to find innermost element? probably by comparing the flat Document data children attributes
+    //checking what contains what
+    //return element
+}
+
+/** returns the innermost element which contains the point
+* @param {object} documentElement  - the  document tree
+* @param {number} documentElement.pos_x
+* @param {number} documentElement.pos_y
+* @param {number} documentElement.width
+* @param {number} documentElement.height
+*
+* @param {object} point - the point in document coordinates
+* @param {number} point.pos_x - the x coordinate of the point
+* @param {number} point.pos_y - the y coordinate of the point
+* @returns {object} the innermost element (in case point applies to several nested elements) which contains the point
+*/
+function _isPointInElement(documentElement,point){
+    const isInside = 
+        point.pos_x > documentElement.pos_x &&  //Point is right of left side
+        point.pos_x < (documentElement.pos_x + documentElement.width) &&  //Point is left of right side
+        point.pos_y > documentElement.pos_y && //point is below top side
+        point.pos_y < (documentElement.pos_y + documentElement.height) //point is above bottom side
+
+    return isInside 
+}
+
+/** returns all parents and their parents etc. Returns empty array if no match was found.
 *
 * @param {object} documentElements  - the  document tree
 * @param {string} elementId - the Id of the elements whose parents you want to get
@@ -15,6 +53,7 @@ function _getParentChain(documentElements,elementId){
     // create an array containing all the parents 
     let idToSearchFor = elementId;
     let currentElement = _getDocumentElementById(documentElements,elementId)
+
     let parentChain = [];
 
     while (currentElement && idToSearchFor !== "documentElementsRootNode") {
@@ -102,6 +141,7 @@ function _getDocumentElementById(documentElementTree, idToFind) {
 };
 
 export {
+    _isPointInElement,
     _getDocumentElementById,
     _getFlatDocumentData,
     _getElementPositionOnCanvas,
