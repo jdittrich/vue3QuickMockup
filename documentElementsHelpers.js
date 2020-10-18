@@ -4,37 +4,56 @@ function _getParentOf(flatDocumentData, idToSearchFor){
     return parent; 
 };
 
-function _getElementPositionOnCanvas(documentElements,elementId){
-    
+/** returns all parents and their parents etc.
+*
+* @param {object} documentElements  - the  document tree
+* @param {string} elementId - the Id of the elements whose parents you want to get
+* @returns {array} an array with the parents, beginning with…
+*/  
+function _getParentChain(documentElements,elementId){
     const flatDocumentData = _getFlatDocumentData(documentElements);
-        
-
     // create an array containing all the parents 
     let idToSearchFor = elementId;
-    let currentElement = _getDocumentElementById(elementId)
+    let currentElement = _getDocumentElementById(documentElements,elementId)
     let parentChain = [];
 
-    while (currentElement && idToSearchFor !== "documentElementsRootNode"){
+    while (currentElement && idToSearchFor !== "documentElementsRootNode") {
         parentChain.push(currentElement)
 
         currentElement = _getParentOf(flatDocumentData, idToSearchFor);
         idToSearchFor = currentElement.id;
     }
-    
-    //now add all positions along the parent chain. 
-    const offset = parentChain.reduce((accumulator, currentValue)=>{
+
+    return parentChain;
+}
+
+/** returns all parents and their parents etc.
+* @param {object} documentElements  - the  document tree
+* @param {string} elementId - the Id of the elements whose parents you want to get
+* @returns {object} an array with the parents, beginning with…
+*/
+function _getElementPositionOnCanvas(documentElements,elementId){
+    const parentChain = _getParentChain(documentElements, elementId);
+
+    const reducerXYAdd = function(accumulator, currentValue){
         return {
             pos_x: accumulator.pos_x + currentValue.pos_x,
             pos_y: accumulator.pos_y + currentValue.pos_y
         }
-    })
+    };
+    //now add all positions along the parent chain.
+    const offset = parentChain.reduce(reducerXYAdd);
 
     return {
         pos_x_abs:offset.pos_x,
-        pos_x_abs:offset.pos_y
+        pos_y_abs:offset.pos_y
     }
 }
 
+/** returns all parents and their parents etc.
+* @param {object} documentElements  - the  document tree
+* @returns {array} flattened tree. The children-array contains the ids of the children, not the children themselves. 
+*/
 function _getFlatDocumentData(documentElementTree) {
     let flatDocumentData = [];
 
@@ -55,7 +74,11 @@ function _getFlatDocumentData(documentElementTree) {
     return flatDocumentData;
 }
 
-
+/** return the element from the document tree with the specified id
+* @param {object} documentElements  - the  document tree
+* @param {string} idToFind - the Id of the elements whose parents you want to get
+* @returns {object} the element from the document tree matching the idToFind
+*/
 function _getDocumentElementById(documentElementTree, idToFind) {
 
     const elementToGet = searchTree(documentElementTree, idToFind)
@@ -81,5 +104,6 @@ function _getDocumentElementById(documentElementTree, idToFind) {
 export {
     _getDocumentElementById,
     _getFlatDocumentData,
-    _getElementPositionOnCanvas
+    _getElementPositionOnCanvas,
+    _getParentChain
 }
