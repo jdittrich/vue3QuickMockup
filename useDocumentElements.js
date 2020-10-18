@@ -1,126 +1,15 @@
 import {reactive, ref, computed, watch} from './vue.esm-browser.js'
-
+import {_getDocumentElementById,_getElementPositionOnCanvas} from './documentElementsHelpers.js'
+import documentElementData from './documentElementData.js'
 // should I keep it array or better have a root node? Probably a root node. I can leave the root note pretty much empty. 
 // when I use it as canvas, I can add stuff like zoom and width and whatnot somewhere else; the <qm-canvas> or whatever does only
 // need to access child objects (in HTML the root node is the same as the .document)
-let documentElements = reactive({
-    id: "documentElementsRootNode",
-    children: [{
-            width: 100,
-            height: 130,
-            pos_x: 10,
-            pos_y: 20,
-            id: "1",
-            children: [{
-                width: 30,
-                height: 40,
-                pos_x: 10,
-                pos_y: 10,
-                children: [],
-                id: "99"
-            }]
-        },
-        {
-            width: 30,
-            height: 40,
-            pos_x: 200,
-            pos_y: 30,
-            children: [],
-            id: "2"
-        },
-        {
-            width: 140,
-            height: 50,
-            pos_x: 200,
-            pos_y: 40,
-            children: [],
-            id: "3"
-        }
-    ]
-});
+let documentElements = reactive(documentElementData);
 
-const selectedElementId = ref("null");
-
-
+const selectedElementId = ref(null);
 
 
 function useDocumentElements() {
-    // HELPERS
-    function _calculatePositionOnCanvas(elementId,documentElements){
-           
-        const flatDocumentData = _getFlatDocumentData(documentElements);
-            
-        function getParentOf(flatDocumentData, idToSeachFor){
-            const parent = flatDocumentData.find(element => element.children.includes(idToSeachFor));
-            return parent; 
-        }
-
-        // create an array containing all the parents 
-        let idToSeachFor = elementId;
-        let currentElement = _getDocumentElementById(elementId)
-        let parentChain = [];
-
-        while (currentElement && idToSearchFor !== "documentElementsRootNode"){
-            
-            parentChain.push(currentElement)
-
-            currentElement = getParentOf(flatDocumentData, idToSeachFor);
-            idToSearchFor = currentElement.id;
-        }
-        
-        //now add all positions along the parent chain. 
-        const offset = parentChain.reduce((accumulator, currentValue)=>{
-            return {
-                pos_x: accumulator.pos_x + currentValue.pos_x,
-                pos_y: accumulator.pos_y + currentValue.pos_y
-            }
-        })
-
-        return offset
-    }
-
-    function _getFlatDocumentData(documentElementTree) {
-        let flatDocumentData = [];
-
-        flatten(documentElementTree);
-
-        function flatten(documentElementTree) {
-            const toAppend = Object.assign({}, documentElementTree, {
-                children: documentElementTree.children.map(element => element.id)
-            });
-            flatDocumentData.push(toAppend);
-            
-            if (documentElementTree.children.length > 0) {
-                documentElementTree.children.forEach(element => flatten(element))
-            }
-        }
-
-        return flatDocumentData;
-    }
-
-
-    function _getDocumentElementById(documentElementTree, idToFind) {
-
-        const elementToGet = searchTree(documentElementTree, idToFind)
-
-        // https://stackoverflow.com/questions/9133680#9133680, CC BY-SA_3, driangle, tanman
-        function searchTree(element, idToFind) {
-            if (element.id == idToFind) {
-                return element;
-            } else if (element.children != null) {
-                var i;
-                var result = null;
-                for (i = 0; result == null && i < element.children.length; i++) {
-                    result = searchTree(element.children[i], idToFind);
-                }
-                return result;
-            }
-            return null;
-        }
-
-        return elementToGet;
-    };
-
     //MOVE ELEMENTS
     function moveSelectedElementBy(pos_diff){
 
@@ -187,12 +76,11 @@ function useDocumentElements() {
     }
 
     const selectedElement = computed(()=>{
-        const selectedElementData = _getDocumentElementById(documentElements, selectedElementId.value)
-        return selectedElementData;
-        
-        // const positionOnCanvas = 
-        //  selectedElement
-        // _getDocumentElementById(selectedElementId.value)
+        if(!selectedElementId.value){return null}
+
+        const selectedElementData = _getDocumentElementById(documentElements, selectedElementId.value);
+        const absolutePosition = _getElementPositionOnCanvas(documentElements, selectedElementId.value);
+        return Object.assign({},selectedElementData,absolutePosition);
     });
     // A note on learning: This only got "activated" aka seen-as-computed when I used .value
     // I tried quite some other things like using watch instead or tried to track the value 
