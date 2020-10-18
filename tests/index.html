@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+
+    <script src="chai.js"></script>
+    <script src="mocha.js"></script>
+
+
+    <script class="mocha-init">
+      mocha.setup('bdd');
+      mocha.checkLeaks();
+      
+    </script>
+    <script type="module">
+        
+      import documentElementData from './../documentElementData.js'
+      import {  _getDocumentElementById,
+                _getFlatDocumentData,
+                _getElementPositionOnCanvas
+        } from './../documentElementsHelpers.js'
+
+      const it = Mocha.it;
+      const describe = Mocha.describe;
+      
+      describe('_getDocumentElementById', function () {
+        it('should return the document object with the id', function () {
+            //get a non-root object: 
+            const documentObject = documentElementData.children[1]
+            //get its id
+            const documentObjectId = documentObject.id 
+
+            chai.expect(
+                _getDocumentElementById(documentElementData,documentObjectId)
+              ).to.equal(
+                documentObject
+              );
+        });
+      });
+
+
+      describe('_getFlatDocumentData', function(){
+        const flatData = _getFlatDocumentData(documentElementData); 
+        it('should be an array', function(){
+          chai.expect(flatData).to.be.an('Array');
+        })
+      });
+
+
+    </script>
+    <script class="mocha-exec" type="module">
+      mocha.run();
+    </script>
+  </body>
+</html>
