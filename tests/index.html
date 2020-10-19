@@ -97,6 +97,44 @@
       })
     });
 
+    describe('_elementPointIsIn', function(){
+      const nestedData = {
+          'id': 'documentElementsRootNode',
+          'children':[
+            {
+            'id':'1', 
+            'pos_x':20, 
+            'pos_y':31,
+            'width':200,
+            'height':151,
+            'children':[
+              {'id':'2',
+                'pos_x':10,
+                'pos_y':11,
+                'width':40,
+                'height':51,
+                'children':[
+                  {
+                    id:'3',
+                    'pos_x':10,
+                    'pos_y':3,
+                    'width':10,
+                    'height':11,
+                    'children':[]
+                  }] 
+              }]
+          }]
+        }
+
+      const pointIn3 = {pos_x:50, pos_y:50}
+      const pointIn1 = {pos_x:110, pos_y:150}
+      
+      it('should return the element under the point is a child of', function(){
+        chai.expect(_elementPointIsIn(nestedData,pointIn3)).to.eql({id:'3','pos_x':10,'pos_y':3,'width':10,'height':11,'children':[]})
+      });
+    });
+
+
     </script>
     <script class="mocha-exec" type="module">
       mocha.run();
