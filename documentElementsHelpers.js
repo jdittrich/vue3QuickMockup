@@ -12,15 +12,66 @@ function _getParentOf(flatDocumentData, idToSearchFor){
 * @returns {object} the innermost element (in case point applies to several nested elements) which contains the point
 */
 function _elementPointIsIn(documentElements,point){
-    const flatDocumentData = _getFlatDocumentData(documentElements);
-    const enclosingElements = flatDocumentData.filter(element => _isPointInElement(element,point));
+    //let currentOffset = {pos_x: 0, pos_y:0}
+    let elementsMatching = []
     
-    //efficient way to find innermost element? probably by comparing the flat Document data children attributes
-    //checking what contains what
+    //let containsPoint = _documentElements.children.find(element => _isPointInElement(element,point))
+    // its a mess!!!
+
+    
+    function findContainingElement(documentElement, currentOffset) {
+        //calculate new offset
+        let newOffset = {
+            pos_x: currentOffset.pos_x + documentElement.pos_x,
+            pos_y: currentOffset.pos_y + documentElement.pos_y
+        }
+
+        const objectDimensionsWithOffset = {
+            width: documentElement.width,
+            height: documentElement.height,
+            pos_x: newOffset.pos_x,
+            pos_y: newOffset.pos_y
+        }
+
+        if (_isPointInElement(objectDimensionsWithOffset,point)) {
+            elementsMatching.push(documentElement)
+
+            if (documentElement.children.length > 0) {
+                documentElement.find(findContainingElement(documentElement, currentOffset))
+            };
+            return true
+        } else {
+            return false
+        }
+
+        //call function somehow… would be cool if the return value would be the chain, so we would have a tree-walking accumulator?
+    }
+
+
+    //inspect child elements
+
+    //const containingElement = documentElementsAbsPositions.find(element => _isPointInElement(element,point))
+    }
+
+    
+    if (containsPoint.children.length > 0){
+
+    }
+
+    
+
+    // traverse the tree, add pos_x_abs on the way. 
+    // if element does not contain the point: stop
+    // if element contains the point: continue
+    //   check children elements. If one contains the point: 
+    //   continue with this element
+
+
+
     //return element
 }
 
-/** returns the innermost element which contains the point
+/** TODO: does not work for nested elements: returns the innermost element which contains the point
 * @param {object} documentElement  - the  document tree
 * @param {number} documentElement.pos_x
 * @param {number} documentElement.pos_y
