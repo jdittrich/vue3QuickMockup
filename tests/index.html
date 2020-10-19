@@ -23,7 +23,9 @@
       import {  _getDocumentElementById,
                 _getFlatDocumentData,
                 _getElementPositionOnCanvas,
-                _getParentChain
+                _getParentChain,
+                _isPointInElement,
+                _elementPointIsIn
         } from './../documentElementsHelpers.js'
 
       const it = Mocha.it;
@@ -73,6 +75,11 @@
         it('should return the parents', function(){
           chai.expect(_getParentChain(nestedData,'1')).to.eql(parentChain);
         })
+
+        it('should return the id as the only value in an array if the element is a direct descendent of the root element', function(){
+          chai.expect(_getParentChain(nestedData,'2')).to.eql([nestedData.children[0]]);
+        })
+
       });
 
     describe('_getParentChain', function(){
@@ -126,14 +133,45 @@
           }]
         }
 
-      const pointIn3 = {pos_x:50, pos_y:50}
+      const pointIn3 = {pos_x:45, pos_y:50}
       const pointIn1 = {pos_x:110, pos_y:150}
+
       
-      it('should return the element under the point is a child of', function(){
-        chai.expect(_elementPointIsIn(nestedData,pointIn3)).to.eql({id:'3','pos_x':10,'pos_y':3,'width':10,'height':11,'children':[]})
+      it('should return an array with 4 elements', function(){
+        chai.expect(_elementPointIsIn(nestedData,pointIn3)).to.eql([nestedData,nestedData.children[0],nestedData.children[0].children[0],nestedData.children[0].children[0].children[0]])
+      });
+
+      it('should return an array with 2 elements', function(){
+        chai.expect(_elementPointIsIn(nestedData,pointIn1)).to.eql([nestedData,nestedData.children[0]])
       });
     });
 
+
+    describe('_isPointInElement', function(){
+        const element = {
+            pos_x:2,
+            pos_y:2,
+            width:50,
+            height:50
+          }
+        const outsidePoint = {
+          pos_x:999,
+          pos_y:999
+        }
+
+        const insidePoint = {
+          pos_x:15,
+          pos_y:15
+        }
+
+        it('should recognize point is outside',function(){
+          chai.expect(_isPointInElement(element,outsidePoint)).to.be.false;
+        })
+
+        it('should recognize point is inside',function(){
+          chai.expect(_isPointInElement(element,insidePoint)).to.be.true;
+        })
+      });
 
     </script>
     <script class="mocha-exec" type="module">

@@ -11,64 +11,40 @@ function _getParentOf(flatDocumentData, idToSearchFor){
 * @param {number} point.pos_y - the y coordinate of the point
 * @returns {object} the innermost element (in case point applies to several nested elements) which contains the point
 */
-function _elementPointIsIn(documentElements,point){
+function _elementPointIsIn(documentElement,point){
     //let currentOffset = {pos_x: 0, pos_y:0}
-    let elementsMatching = []
     
     //let containsPoint = _documentElements.children.find(element => _isPointInElement(element,point))
     // its a mess!!!
-
+    let elementsPointIsIn = findContainingElement(documentElement, point);    
     
-    function findContainingElement(documentElement, currentOffset) {
+    function findContainingElement(documentElement, point, currentOffset={pos_x:0, pos_y:0},  accumulator=[]) {
         //calculate new offset
         let newOffset = {
-            pos_x: currentOffset.pos_x + documentElement.pos_x,
-            pos_y: currentOffset.pos_y + documentElement.pos_y
+            pos_x: currentOffset.pos_x + (documentElement.pos_x || 0),
+            pos_y: currentOffset.pos_y + (documentElement.pos_y || 0)
         }
 
         const objectDimensionsWithOffset = {
-            width: documentElement.width,
-            height: documentElement.height,
+            width: (documentElement.width || Number.POSITIVE_INFINITY),
+            height: (documentElement.height || Number.POSITIVE_INFINITY),
             pos_x: newOffset.pos_x,
             pos_y: newOffset.pos_y
         }
 
         if (_isPointInElement(objectDimensionsWithOffset,point)) {
-            elementsMatching.push(documentElement)
+            accumulator.push(documentElement)
 
             if (documentElement.children.length > 0) {
-                documentElement.find(findContainingElement(documentElement, currentOffset))
+                documentElement.children.find(childElement => findContainingElement(childElement, point, newOffset, accumulator))
             };
-            return true
+            return accumulator
         } else {
             return false
-        }
-
-        //call function somehow… would be cool if the return value would be the chain, so we would have a tree-walking accumulator?
+        } 
     }
 
-
-    //inspect child elements
-
-    //const containingElement = documentElementsAbsPositions.find(element => _isPointInElement(element,point))
-    }
-
-    
-    if (containsPoint.children.length > 0){
-
-    }
-
-    
-
-    // traverse the tree, add pos_x_abs on the way. 
-    // if element does not contain the point: stop
-    // if element contains the point: continue
-    //   check children elements. If one contains the point: 
-    //   continue with this element
-
-
-
-    //return element
+    return elementsPointIsIn;
 }
 
 /** TODO: does not work for nested elements: returns the innermost element which contains the point
@@ -193,6 +169,7 @@ function _getDocumentElementById(documentElementTree, idToFind) {
 
 export {
     _isPointInElement,
+    _elementPointIsIn,
     _getDocumentElementById,
     _getFlatDocumentData,
     _getElementPositionOnCanvas,
