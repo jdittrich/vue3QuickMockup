@@ -65,7 +65,28 @@ function useDocumentElements() {
        }
     }
 
+    /**
+    * Take a point in html-document coordinates. 
+    * Assumes the selected element to be dropped at point. 
+    * Reattaches selected element 
+    * to new parent element if dropped on top of that (to-be parent) element
+    * removes from old element. 
+    * 
+    * @param {object} point - the point in document coordinates
+    * @param {number} point.pos_x - the x coordinate of the point
+    * @param {number} point.pos_y - the y coordinate of the point
+    */
+    function dropElement(point){
+        // convert to qm-document coordiantes
 
+        //attach to new parent?
+        //no: 
+        //just move
+
+        //yes: 
+        // act on data
+
+    }
 
     function setSelectedElementId(newSelectedElementId){
         selectedElementId.value = newSelectedElementId;    
@@ -91,6 +112,7 @@ function useDocumentElements() {
             _getDocumentElementById(selectedElementId)
         });
     */
+
 
     return {
         documentElements,

@@ -1,5 +1,6 @@
+
 // HELPERS
-function _getParentOf(flatDocumentData, idToSearchFor){
+function _getParentOf(idToSearchFor, flatDocumentData){
     const parent = flatDocumentData.find(element => element.children.includes(idToSearchFor));
     return parent; 
 };
@@ -9,7 +10,7 @@ function _getParentOf(flatDocumentData, idToSearchFor){
 * @param {object} point - the point in document coordinates
 * @param {number} point.pos_x - the x coordinate of the point
 * @param {number} point.pos_y - the y coordinate of the point
-* @returns {object} the innermost element (in case point applies to several nested elements) which contains the point
+* @returns {array} the elements which contain the point
 */
 function _elementPointIsIn(documentElement,point){
     //let currentOffset = {pos_x: 0, pos_y:0}
@@ -77,16 +78,17 @@ function _isPointInElement(documentElement,point){
 */  
 function _getParentChain(documentElements,elementId){
     const flatDocumentData = _getFlatDocumentData(documentElements);
-    // create an array containing all the parents 
+    
     let idToSearchFor = elementId;
-    let currentElement = _getDocumentElementById(documentElements,elementId)
+
+    let currentElement = flatDocumentData.find(element => element.id === idToSearchFor)
 
     let parentChain = [];
 
     while (currentElement && idToSearchFor !== "documentElementsRootNode") {
         parentChain.push(currentElement)
 
-        currentElement = _getParentOf(flatDocumentData, idToSearchFor);
+        currentElement = _getParentOf(idToSearchFor, flatDocumentData);
         idToSearchFor = currentElement.id;
     }
 
