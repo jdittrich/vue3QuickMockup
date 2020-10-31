@@ -1,3 +1,12 @@
+import {treeReduce,treeReduceContext,treeMap,treeFind} from './lib/treeFunctions.js'
+
+/**
+ * The TreeNode Object can have an array of children with other tree node objects. It often also comes with an id
+ * @typedef treeNode
+ * @type {object}
+ * @property {array} [children] - array of treeNodes
+ */
+
 
 // HELPERS
 function _getParentOf(idToSearchFor, flatDocumentData){
@@ -48,17 +57,13 @@ function _elementPointIsIn(documentElement,point){
     return elementsPointIsIn;
 }
 
-/** TODO: does not work for nested elements: returns the innermost element which contains the point
+/** 
 * @param {object} documentElement  - the  document tree
 * @param {number} documentElement.pos_x
 * @param {number} documentElement.pos_y
 * @param {number} documentElement.width
 * @param {number} documentElement.height
-*
-* @param {object} point - the point in document coordinates
-* @param {number} point.pos_x - the x coordinate of the point
-* @param {number} point.pos_y - the y coordinate of the point
-* @returns {object} the innermost element (in case point applies to several nested elements) which contains the point
+* @returns {boolean} - true, if the point is in the document elements passed. 
 */
 function _isPointInElement(documentElement,point){
     const isInside = 
@@ -73,27 +78,29 @@ function _isPointInElement(documentElement,point){
 /** returns all parents and their parents etc. Returns empty array if no match was found.
 *
 * @param {object} documentElements  - the  document tree
-* @param {string} elementId - the Id of the elements whose parents you want to get
-* @returns {array} an array with the parents, beginning with…
-*/  
-function _getParentChain(documentElements,elementId){
-    const flatDocumentData = _getFlatDocumentData(documentElements);
+* @param {string} idElementToFind - the Id of the elements whose parents you want to get
+* @returns {array} an array with the parents of the element and the element itself
+*/
+
+function _getParentChain(treeNode, idElementToFind) {
     
-    let idToSearchFor = elementId;
+    const reducerFlattenWithContext = function (accumulator, treeNode, context) {
+        const newElement = {
+            'id': treeNode.id,
+            'element': treeNode,
+            'childIds': (treeNode.children) ? treeNode.children.map(childNode => childNode.id) : [] , 
+            'ancestors': [...context.ancestors]
+        }
 
-    let currentElement = flatDocumentData.find(element => element.id === idToSearchFor)
-
-    let parentChain = [];
-
-    while (currentElement && idToSearchFor !== "documentElementsRootNode") {
-        parentChain.push(currentElement)
-
-        currentElement = _getParentOf(idToSearchFor, flatDocumentData);
-        idToSearchFor = currentElement.id;
+        return [...accumulator, newElement];
     }
 
-    return parentChain;
+    const flattenedTree = treeReduceContext(reducerFlattenWithContext, [], treeNode);
+    const elementFound = flattenedTree.find(element => element.id === idElementToFind)
+    
+    return [...elementFound.ancestors,elementFound.element];
 }
+
 
 /** returns all parents and their parents etc.
 * @param {object} documentElements  - the  document tree
@@ -105,42 +112,40 @@ function _getElementPositionOnCanvas(documentElements,elementId){
 
     const reducerXYAdd = function(accumulator, currentValue){
         return {
-            pos_x: accumulator.pos_x + currentValue.pos_x,
-            pos_y: accumulator.pos_y + currentValue.pos_y
+            pos_x: accumulator.pos_x + (currentValue.pos_x),
+            pos_y: accumulator.pos_y + (currentValue.pos_y)
         }
     };
     //now add all positions along the parent chain.
-    const offset = parentChain.reduce(reducerXYAdd);
+    const offsetParentChain = parentChain.reduce(reducerXYAdd);
 
-    return {
-        pos_x_abs:offset.pos_x,
-        pos_y_abs:offset.pos_y
-    }
+    return offsetParentChain;
 }
 
-/** returns all parents and their parents etc.
-* @param {object} documentElements  - the  document tree
-* @returns {array} flattened tree. The children-array contains the ids of the children, not the children themselves. 
-*/
-function _getFlatDocumentData(documentElementTree) {
-    let flatDocumentData = [];
 
-    flatten(documentElementTree);
+/** returns a brand new Flat tree. If you manipulate the returned flattened node, the passed-in-by-parameter nodes do NOT change!
+ * @param {treeNode} - treeNode
+ * @returns {array} - array of treeNode like objects. Their children, however, are not other treeNodes, but an array of ids of these children.
+ */
 
-    function flatten(documentElementTree) {
-        let childrenIds = documentElementTree.children.map(element => element.id) 
-        const toAppend = Object.assign({}, documentElementTree, {
-            'children': childrenIds
-        });
-        flatDocumentData.push(toAppend);
-        
-        if (documentElementTree.children.length > 0) {
-            documentElementTree.children.forEach(element => flatten(element))
-        }
-    }
+function _getFlatDocumentData(treeNode){
+    const flattenTreeReducer = function(accumulator,treeNode){
+        let newTreeNode = {...treeNode}
+    
+        if(treeNode.children){
+            let childrenIds = treeNode.children.map(childNode=>childNode.id)
+            newTreeNode.children = childrenIds;
+        };
 
-    return flatDocumentData;
+        const newAccumulator = [...accumulator,newTreeNode];
+
+        return newAccumulator;
+    };
+    
+    const flattenedTree = treeReduce(flattenTreeReducer,[],treeNode);
+    return flattenedTree
 }
+
 
 /** return the element from the document tree with the specified id
 * @param {object} documentElements  - the  document tree
@@ -148,25 +153,13 @@ function _getFlatDocumentData(documentElementTree) {
 * @returns {object} the element from the document tree matching the idToFind
 */
 function _getDocumentElementById(documentElementTree, idToFind) {
-
-    const elementToGet = searchTree(documentElementTree, idToFind)
-
-    // https://stackoverflow.com/questions/9133680#9133680, CC BY-SA_3, driangle, tanman
-    function searchTree(element, idToFind) {
-        if (element.id == idToFind) {
-            return element;
-        } else if (element.children != null) {
-            var i;
-            var result = null;
-            for (i = 0; result == null && i < element.children.length; i++) {
-                result = searchTree(element.children[i], idToFind);
-            }
-            return result;
-        }
-        return null;
+    const checkElement = function(treeNode){
+        return (treeNode.id === idToFind)
     }
+    
+    const foundElement = treeFind(checkElement,documentElementTree)
 
-    return elementToGet;
+    return foundElement;
 };
 
 export {

@@ -48,17 +48,8 @@ describe('_getParentChain', function () {
             }]
     }
 
-    const parentChain = [
-        { 'id': '1', 'children': [] },
-        { 'id': '2', 'children': ['1'] }
-    ];
-
-    it('should return the parents', function () {
-        chai.expect(_getParentChain(nestedData, '1')).to.eql(parentChain);
-    })
-
-    it('should return the id as the only value in an array if the element is a direct descendent of the root element', function () {
-        chai.expect(_getParentChain(nestedData, '2')).to.eql([{ 'id': '2', 'children': ['1'] }]);
+    it('should return the parents+ element ', function () {
+        chai.expect(_getParentChain(nestedData, '2')).to.eql([nestedData,nestedData.children[0]]);
     })
 
 });
@@ -66,11 +57,13 @@ describe('_getParentChain', function () {
 describe('_getParentChain', function () {
     const nestedData = {
         'id': 'documentElementsRootNode',
+        'pos_x':40,
+        'pos_y':50,
         'children': [
             {
                 'id': '2',
-                'pos_x': 20,
-                'pos_y': 30,
+                'pos_x': -20,
+                'pos_y': -20,
                 'children': [
                     {
                         'id': '1',
@@ -82,7 +75,7 @@ describe('_getParentChain', function () {
     }
 
     it('should give the absolute position  by adding all offsets', function () {
-        chai.expect(_getElementPositionOnCanvas(nestedData, '1')).to.eql({ 'pos_x_abs': 30, 'pos_y_abs': 35 });
+        chai.expect(_getElementPositionOnCanvas(nestedData, '1')).to.eql({ 'pos_x': 30, 'pos_y': 35 });
     })
 });
 
