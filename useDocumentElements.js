@@ -1,9 +1,7 @@
 import {reactive, ref, computed, watch} from './vue.esm-browser.js'
 import {_getDocumentElementById,_getElementPositionOnCanvas} from './documentElementsHelpers.js'
 import documentElementData from './documentElementData.js'
-// should I keep it array or better have a root node? Probably a root node. I can leave the root note pretty much empty. 
-// when I use it as canvas, I can add stuff like zoom and width and whatnot somewhere else; the <qm-canvas> or whatever does only
-// need to access child objects (in HTML the root node is the same as the .document)
+
 let documentElements = reactive(documentElementData);
 
 const selectedElementId = ref(null);
