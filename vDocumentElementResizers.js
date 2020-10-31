@@ -55,8 +55,8 @@ export default {
             return{
                 'height':this.selectedElement.height+'px',
                 'width':this.selectedElement.width+'px',
-                'top':this.selectedElement.pos_y_abs+'px',
-                'left':this.selectedElement.pos_x_abs+'px',
+                'top': this.selectedElement.pos_y+'px',
+                'left':this.selectedElement.pos_x+'px',
                 'position':'absolute',
                 'background-color':'rgba(0,100,250,0.3)',
                 'pointer-events':'none'
