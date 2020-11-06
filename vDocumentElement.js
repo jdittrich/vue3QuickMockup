@@ -31,6 +31,7 @@ export default {
             }
         } /*, // if we call a getter in computed we might get child elements and and caching 
         childElements(){
+            //or passing child Id array
             return fictionalgettermethod(this.id) //gets children of elemenet with that id
         }*/
     },

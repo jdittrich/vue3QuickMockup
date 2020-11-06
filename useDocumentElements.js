@@ -1,7 +1,7 @@
 import {reactive, ref, computed, watch} from './vue.esm-browser.js'
 import {_getDocumentElementById, 
         _getElementPositionOnCanvas, 
-        _getElementPointIsIn,
+        _getElementsPointIsIn,
         _getParentChain,
         //_getChildrenOf,
         _getParentOf} from './documentElementsHelpers.js'
