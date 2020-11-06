@@ -13,7 +13,28 @@ const selectedElementId = ref(null);
 
 
 function useDocumentElements() {
-    //MOVE ELEMENTS
+    const selectedElement = computed(() => {
+        if (!selectedElementId.value) { return null }
+
+        const selectedElementData = _getDocumentElementById(documentElements, selectedElementId.value);
+
+        return selectedElementData;
+        // I guess this might be a bad Idea until I have sorted out how to reliable get the absolute position
+        // const absolutePosition = _getElementPositionOnCanvas(documentElements, selectedElementId.value);
+        //return Object.assign({},selectedElementData,absolutePosition);
+    });
+
+    //-------------------
+    // ACTIONS 
+    //-------------------
+    function setSelectedElementId(newSelectedElementId) {
+        selectedElementId.value = newSelectedElementId;
+    }
+
+    function unsetSelectedElementId() {
+        selectedElementId.value = null
+    }
+
     function moveSelectedElementBy(pos_diff){
         const selectedId = selectedElementId.value;
         moveElementBy(selectedId, pos_diff);        
@@ -102,26 +123,6 @@ function useDocumentElements() {
         dropTarget.children.push(storeElement);
 
     }
-
-    function setSelectedElementId(newSelectedElementId){
-        selectedElementId.value = newSelectedElementId;    
-    }
-
-    function unsetSelectedElementId(){
-        selectedElementId.value = null
-    }
-
-    const selectedElement = computed(()=>{
-        if(!selectedElementId.value){return null}
-
-        const selectedElementData = _getDocumentElementById(documentElements, selectedElementId.value);
-        
-        return selectedElementData;
-        // I guess this might be a bad Idea until I have sorted out how to reliable get the absolute position
-        // const absolutePosition = _getElementPositionOnCanvas(documentElements, selectedElementId.value);
-        //return Object.assign({},selectedElementData,absolutePosition);
-    });
-
 
     return {
         documentElements,
