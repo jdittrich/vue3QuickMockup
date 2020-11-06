@@ -1,6 +1,6 @@
 import documentElementData from './../documentElementData.js'
 import {
-    _getDocumentElementById,
+    _getElementById,
     //_getFlatDocumentData,
     _getElementPositionOnCanvas,
     _getParentChain,
@@ -12,7 +12,7 @@ import {
 const it = Mocha.it;
 const describe = Mocha.describe;
 
-describe('_getDocumentElementById', function () {
+describe('_getElementById', function () {
     it('should return the document object with the id', function () {
         //get a non-root object: 
         const documentObject = documentElementData[1]
@@ -20,7 +20,7 @@ describe('_getDocumentElementById', function () {
         const documentObjectId = documentObject.id
 
         chai.expect(
-            _getDocumentElementById(documentObjectId, documentElementData)
+            _getElementById(documentObjectId, documentElementData)
         ).to.equal(
             documentObject
         );
@@ -29,7 +29,7 @@ describe('_getDocumentElementById', function () {
 
 describe('_getParentOf', function () {
     it('should return parent', function () {
-        let parent = _getDocumentElementById("1",documentElementData);
+        let parent = _getElementById("1",documentElementData);
         chai.expect(
             _getParentOf("99",documentElementData)
         ).to.equal(
@@ -49,9 +49,9 @@ describe('_getFlatDocumentData', function () {
 
 describe('_getParentChain', function () {
     const parentsOf99 = [
-        _getDocumentElementById("99",documentElementData),
-        _getDocumentElementById("1",documentElementData),
-        _getDocumentElementById("documentElementsRootNode",documentElementData),
+        _getElementById("99",documentElementData),
+        _getElementById("1",documentElementData),
+        _getElementById("documentElementsRootNode",documentElementData),
     ]
     it('should return the parents+ element ', function () {
         chai.expect(_getParentChain(documentElementData, '99')).to.eql(parentsOf99);
@@ -69,9 +69,9 @@ describe('_elementsPointIsIn', function () {
 
     const pointIn99 = { pos_x: 62, pos_y: 65 }
     const elements99PointIsIn = [
-        _getDocumentElementById("documentElementsRootNode",documentElementData),
-        _getDocumentElementById("1",documentElementData),
-        _getDocumentElementById("99",documentElementData)
+        _getElementById("documentElementsRootNode",documentElementData),
+        _getElementById("1",documentElementData),
+        _getElementById("99",documentElementData)
     ]
 
     it('should return an array with elements root,1,99', function () {

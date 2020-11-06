@@ -1,5 +1,5 @@
 import {reactive, ref, computed, watch} from './vue.esm-browser.js'
-import {_getDocumentElementById, 
+import {_getElementById, 
         _getElementPositionOnCanvas, 
         _getElementsPointIsIn,
         _getParentChain,
@@ -16,7 +16,7 @@ function useDocumentElements() {
     const selectedElement = computed(() => {
         if (!selectedElementId.value) { return null }
 
-        const selectedElementData = _getDocumentElementById(documentElements, selectedElementId.value);
+        const selectedElementData = _getElementById(documentElements, selectedElementId.value);
 
         return selectedElementData;
         // I guess this might be a bad Idea until I have sorted out how to reliable get the absolute position
@@ -42,7 +42,7 @@ function useDocumentElements() {
 
     function moveElementBy(id, pos_diff) {
         const { pos_x_diff, pos_y_diff } = pos_diff;
-        const elementToMove = _getDocumentElementById(id,documentElements);
+        const elementToMove = _getElementById(id,documentElements);
         elementToMove.pos_x += pos_x_diff;
         elementToMove.pos_y += pos_y_diff;
     }
@@ -55,7 +55,7 @@ function useDocumentElements() {
     
     function resizeElementBy(id,pos_diff,sides){     
         const { pos_x_diff, pos_y_diff } = pos_diff;
-        const elementToResize = _getDocumentElementById(id,documentElements);
+        const elementToResize = _getElementById(id,documentElements);
 
         // sides defined with of the sides of a rectangle would be affected. 
         // If a corner handle is grabbed, this would be two sides that are affected
@@ -100,7 +100,7 @@ function useDocumentElements() {
         //not sure if I get these from shared state or injection?
         const dropTargets = _getElementPointIsIn(documentElements,point)
         const dropTarget = dropTargets[dropTargets.length-1]; // the last element obviously being the element itself
-        const dropped = _getDocumentElementById(documentElements,selectedElementId);
+        const dropped = _getElementById(documentElements,selectedElementId);
 
         //create needed variables
         const droppedParent = _getParentOf(selectedElementId.value, documentElements);
@@ -121,8 +121,8 @@ function useDocumentElements() {
         const storeElement = droppedParent.children.splice(1, droppedIndexOld)[0]
         
         dropTarget.children.push(storeElement);
-
     }
+
 
     return {
         documentElements,

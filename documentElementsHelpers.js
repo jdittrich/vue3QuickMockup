@@ -7,6 +7,11 @@ import { unref,readonly } from './vue.esm-browser.js'
  * @typedef documentElement
  * @type {object}
  * @property {array} [children] - array of Ids
+ * @property {string} id
+ * @property {number} pos_x
+ * @property {number} pos_y
+ * @property {number} width
+ * @property {number} height 
  */
 
 /**
@@ -16,10 +21,8 @@ import { unref,readonly } from './vue.esm-browser.js'
  */
 
 
-
-
 /**
- * 
+ * Gets the parent of a documentElement
  * @param {string} idToSearchFor 
  * @param {documentElements} documentElements
  * @returns {documentElement} parent
@@ -44,7 +47,7 @@ function _getParentOf(idToSearchFor, documentElements){
 function _getElementsPointIsIn(documentElements,point){
     // let currentOffset = {pos_x: 0, pos_y:0}
     
-    let rootElement = _getDocumentElementById("documentElementsRootNode",documentElements);
+    let rootElement = _getElementById("documentElementsRootNode",documentElements);
     let elementsPointIsIn = [];
     let offset = {
         pos_x: 0,
@@ -121,7 +124,7 @@ function _getParentChain(documentElements, idElementToFind) {
     idElementToFind = unref(idElementToFind);
 
     let parentChain = [];
-    parentChain.push(_getDocumentElementById(idElementToFind,documentElements));
+    parentChain.push(_getElementById(idElementToFind,documentElements));
     
     let parent = _getParentOf( idElementToFind, documentElements);
     
@@ -135,8 +138,8 @@ function _getParentChain(documentElements, idElementToFind) {
 }
 
 function _getElementChildren(id,documentElements){
-    const parentElement = _getDocumentElementById(id,documentElements); 
-    const childElements = parentElement.children.map(childId => _getDocumentElementById(childId,documentElements));
+    const parentElement = _getElementById(id,documentElements); 
+    const childElements = parentElement.children.map(childId => _getElementById(childId,documentElements));
 
     return childElements;
 }
@@ -165,15 +168,12 @@ function _getElementPositionOnCanvas(documentElements,elementId){
 }
 
 
-
-
-
 /** return the element from the qmDocument tree with the specified id
 * @param {string} idToFind - the Id of the elements whose parents you want to get
 * @param {object} documentElements  - the  qmDocument tree
 * @returns {object} the element from the qmDocument tree matching the idToFind
 */
-function _getDocumentElementById(idToFind,documentElements) {
+function _getElementById(idToFind,documentElements) {
     idToFind = unref(idToFind); //in case the id is reactive
     const foundElement = documentElements.find(element => element.id === idToFind);
     return foundElement;
@@ -182,7 +182,9 @@ function _getDocumentElementById(idToFind,documentElements) {
 export {
     _isPointInElement,
     _getElementsPointIsIn,
-    _getDocumentElementById,
+    _getElementPointIsIn,
+    _getElementChildren,
+    _getElementById,
     _getElementPositionOnCanvas,
     _getParentChain,
     _getParentOf
