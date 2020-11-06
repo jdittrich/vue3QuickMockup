@@ -1,5 +1,10 @@
 import {reactive, ref, computed, watch} from './vue.esm-browser.js'
-import {_getDocumentElementById,_getElementPositionOnCanvas} from './documentElementsHelpers.js'
+import {_getDocumentElementById, 
+        _getElementPositionOnCanvas, 
+        _getElementPointIsIn,
+        _getParentChain,
+        //_getChildrenOf,
+        _getParentOf} from './documentElementsHelpers.js'
 import documentElementData from './documentElementData.js'
 
 let documentElements = reactive(documentElementData);
@@ -10,14 +15,13 @@ const selectedElementId = ref(null);
 function useDocumentElements() {
     //MOVE ELEMENTS
     function moveSelectedElementBy(pos_diff){
-
         const selectedId = selectedElementId.value;
         moveElementBy(selectedId, pos_diff);        
     }
 
     function moveElementBy(id, pos_diff) {
         const { pos_x_diff, pos_y_diff } = pos_diff;
-        const elementToMove = _getDocumentElementById(documentElements,id);
+        const elementToMove = _getDocumentElementById(id,documentElements);
         elementToMove.pos_x += pos_x_diff;
         elementToMove.pos_y += pos_y_diff;
     }
@@ -30,59 +34,72 @@ function useDocumentElements() {
     
     function resizeElementBy(id,pos_diff,sides){     
         const { pos_x_diff, pos_y_diff } = pos_diff;
-        const elementToResize = _getDocumentElementById(documentElements,id);
+        const elementToResize = _getDocumentElementById(id,documentElements);
 
-        //if top is selected
+        // sides defined with of the sides of a rectangle would be affected. 
+        // If a corner handle is grabbed, this would be two sides that are affected
+        // since I take the top left corner as reference point (just like CSS)
+        // when resizing e.g. the left side, we need to change position if dealing with top and left sides
         if(sides.top===true){
-            //change top position
             elementToResize.pos_y += pos_y_diff;
             //change height inverse proportionally, so that bottom does not move
             elementToResize.height -= pos_y_diff;
         }
     
-       //if right is selected
         if(sides.right === true){
-            //change width proportially
             elementToResize.width += pos_x_diff; 
        }
        
-       //if bottom is selected
        if(sides.bottom === true){
-            // change height proportially
            elementToResize.height += pos_y_diff
        }
-    
-    
-       //if left is selected
+       
        if(sides.left === true){
-           //change left position proportionally
            elementToResize.pos_x += pos_x_diff;
-           
-           //change width inverse proportially so that the right does not move. 
+           //change width inverse proportionally so that the right does not move. 
            elementToResize.width -= pos_x_diff;
        }
     }
 
     /**
-    * Take a point in html-document coordinates. 
+    * Take a point in qm-document coordinates. 
     * Assumes the selected element to be dropped at point. 
     * Reattaches selected element 
     * to new parent element if dropped on top of that (to-be parent) element
     * removes from old element. 
     * 
-    * @param {object} point - the point in document coordinates
+    * @param {object} point - the point in document coordinates where the element was dropped
     * @param {number} point.pos_x - the x coordinate of the point
     * @param {number} point.pos_y - the y coordinate of the point
     */
     function dropElement(point){
-        // convert to qm-document coordiantes
+        // TODO this is soooo messy. 
+        // convert to qm-document coordinates
+        
+        //not sure if I get these from shared state or injection?
+        const dropTargets = _getElementPointIsIn(documentElements,point)
+        const dropTarget = dropTargets[dropTargets.length-1]; // the last element obviously being the element itself
+        const dropped = _getDocumentElementById(documentElements,selectedElementId);
 
-        //attach to new parent?
-        //no: 
-        //just move
+        //create needed variables
+        const droppedParent = _getParentOf(selectedElementId.value, documentElements);
 
-        //yes: 
-        // act on data
+        
+        const dropTarget_absPos = _getElementPositionOnCanvas(documentElements,dropTarget.id);
+        const dropped_absPos = _getElementPositionOnCanvas(documentElements,dropped.id)
+
+        //what is their difference?
+        const droppedTarget_diffPos = {
+            pos_x: dropped_absPos.pos_x - dropTarget_absPos.pos_x,
+            pos_y: dropped_absPos.pos_y - dropTarget_absPos.pos_y
+        }
+
+        //remove from current Parent attach to new parent
+        const droppedIndexOld = droppedParent.children.indexOf(dropped); //for later use in .splice()
+        
+        const storeElement = droppedParent.children.splice(1, droppedIndexOld)[0]
+        
+        dropTarget.children.push(storeElement);
 
     }
 
@@ -98,18 +115,12 @@ function useDocumentElements() {
         if(!selectedElementId.value){return null}
 
         const selectedElementData = _getDocumentElementById(documentElements, selectedElementId.value);
-        const absolutePosition = _getElementPositionOnCanvas(documentElements, selectedElementId.value);
-        return Object.assign({},selectedElementData,absolutePosition);
+        
+        return selectedElementData;
+        // I guess this might be a bad Idea until I have sorted out how to reliable get the absolute position
+        // const absolutePosition = _getElementPositionOnCanvas(documentElements, selectedElementId.value);
+        //return Object.assign({},selectedElementData,absolutePosition);
     });
-    // A note on learning: This only got "activated" aka seen-as-computed when I used .value
-    // I tried quite some other things like using watch instead or tried to track the value 
-    // using this.selectedElement in the template etc. But .value it was.
-    /*watch(
-        selectedElementId,(newId,oldId) => {
-            console.log("ids",newId,oldId); 
-            _getDocumentElementById(selectedElementId)
-        });
-    */
 
 
     return {
@@ -119,7 +130,8 @@ function useDocumentElements() {
         selectedElementId,
         selectedElement,
         moveSelectedElementBy,
-        resizeSelectedElementBy
+        resizeSelectedElementBy,
+        dropElement
     }
 }
 

@@ -5,7 +5,7 @@ import {
     _getElementPositionOnCanvas,
     _getParentChain,
     _isPointInElement,
-    _elementPointIsIn
+    _getElementPointIsIn
 } from './../documentElementsHelpers.js'
 
 const it = Mocha.it;
@@ -114,11 +114,11 @@ describe('_elementPointIsIn', function () {
 
 
     it('should return an array with 4 elements', function () {
-        chai.expect(_elementPointIsIn(nestedData, pointIn3)).to.eql([nestedData, nestedData.children[0], nestedData.children[0].children[0], nestedData.children[0].children[0].children[0]])
+        chai.expect(_getElementPointIsIn(nestedData, pointIn3)).to.eql([nestedData, nestedData.children[0], nestedData.children[0].children[0], nestedData.children[0].children[0].children[0]])
     });
 
     it('should return an array with 2 elements', function () {
-        chai.expect(_elementPointIsIn(nestedData, pointIn1)).to.eql([nestedData, nestedData.children[0]])
+        chai.expect(_getElementPointIsIn(nestedData, pointIn1)).to.eql([nestedData, nestedData.children[0]])
     });
 });
 
