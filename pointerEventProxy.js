@@ -2,14 +2,14 @@
  * Proxies events so that strategies can be swapped out via setPointerEventStrategy
  */
 
-
- // create a custom event. Rather similar like a normal mouseEvent with some additional data like
- // downPoint (the last mousedown)
- // isDragging 
-function createQmEvent(nativeEvent,{
-    downPoint = null,
-    isDragging = null
-}){
+/**
+ * 
+ * @param {object} nativeEvent - native MouseEvent 
+ * @param {object} customProperties  - additional properties to be added to the qmEvent
+ * @param {boolean} customProperties.isDragging - is a drag current going on?
+ * @param {object} customProperties.pos_down - position of the mousedown that started the drag (pox_x, pos_y)
+ */
+function createQmEvent(nativeEvent,customProperties){
     const qmPointerEvent = {
         pos_x_diff:nativeEvent.movementX,
         pos_y_diff:nativeEvent.movementY,
@@ -22,7 +22,7 @@ function createQmEvent(nativeEvent,{
         originalEvent: nativeEvent
     }
 
-    if (downPoint !== null){
+    if (customProperties.downPoint){
         qmPointerEvent.downPoint_pos_x = downPoint.pos_x;
         qmPointerEvent.downPoint_pos_y = downPoint.pos_y; 
     }

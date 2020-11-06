@@ -16,7 +16,13 @@ let elementDragStrategy = {
         const pos_y_diff = qmEvent.pos_y_diff;
         documentElements.moveSelectedElementBy({ pos_x_diff, pos_y_diff });
     },
-    up:function() {
+    up: function (qmEvent, options) {
+        const postionOfUp = {
+            pos_x:qmEvent.pos_x,
+            pos_y:qmEvent.pos_y
+
+        }
+        documentElements.dropElement(postionOfUp)
     }
 };
 

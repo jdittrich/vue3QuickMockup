@@ -1,19 +1,17 @@
-export default{
-    id: "documentElementsRootNode",
-    children: [{
+export default {
+    elements:[
+        {
+            id: "documentElementsRootNode",
+            pos_x: 0,
+            pos_y: 0
+        },
+        {
             width: 100,
             height: 130,
             pos_x: 10,
             pos_y: 20,
             id: "1",
-            children: [{
-                width: 30,
-                height: 40,
-                pos_x: 10,
-                pos_y: 10,
-                children: [],
-                id: "99"
-            }]
+            children: ["99"]
         },
         {
             width: 30,
@@ -31,5 +29,6 @@ export default{
             children: [],
             id: "3"
         }
+
     ]
 }
