@@ -1,4 +1,4 @@
-import {documentElements,resizeSelectedElementBy} from './useDocumentElements.js'
+import {resizeSelectedElementBy} from './useDocumentElements.js'
 
 
 /**
