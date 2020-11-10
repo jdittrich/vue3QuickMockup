@@ -1,5 +1,5 @@
 import {treeReduce,treeReduceContext,treeMap,treeFind} from './lib/treeFunctions.js'
-import { unref,readonly } from './vue.esm-browser.js'
+import { unref,toRaw,readonly } from './vue.esm-browser.js'
 
 
 /**
@@ -63,10 +63,8 @@ function _getElementsPointIsIn(documentElements,point){
             pos_y: offset.pos_y + (containingElement.pos_y || 0)
         }
 
-        let childrenOfContainingElement = _getElementChildren(containingElement.id,documentElements) 
-
-        let newContainingElement = childrenOfContainingElement //children should be elements, but they are ids! 
-            .find(function(childElement){
+        let childrenOfContainingElement = _getElementChildren(containingElement.id,documentElements); 
+        let newContainingElement = childrenOfContainingElement.find(function(childElement){
                 const objectDimensionsWithOffset = {
                     width: (childElement.width || Number.POSITIVE_INFINITY),
                     height: (childElement.height || Number.POSITIVE_INFINITY),
@@ -137,23 +135,28 @@ function _getParentChain(documentElements, idElementToFind) {
     return parentChain;
 }
 
-function _getElementChildren(id,documentElements){
-    const parentElement = _getElementById(id,documentElements); 
+function _getElementChildren(id, documentElements){
+    const parentElement = _getElementById(id,documentElements);
+    console.log(toRaw(parentElement.children));
     const childElements = parentElement.children.map(childId => _getElementById(childId,documentElements));
+    
 
+    if(childElements.length === 1 && childElements[0] === undefined){
+        throw "Found children are undefined – do the children that are referenced on the element currently exists?"
+    }
     return childElements;
 }
 
 
 /** returns the absolute position of an element in the qmDocument
 * @param {documentElement} documentElements  - the  qmDocument tree
-* @param {string} elementId - the Id of the elements whose parents you want to get
-* @returns {array} an array with the parents, beginning with…
+* @param {string} id - the Id of the elements whose parents you want to get
+* @returns {object} object with absolute pos_x und pos_y
 */
-function _getElementPositionOnCanvas(documentElements,elementId){
-    elementId = unref(elementId);
+function _getElementPositionOnCanvas(id, documentElements){
+    id = unref(id);
 
-    const parentChain = _getParentChain(documentElements, elementId);
+    const parentChain = _getParentChain(documentElements, id);
 
     const reducerXYAdd = function(accumulator, currentValue){
         return {
@@ -176,6 +179,9 @@ function _getElementPositionOnCanvas(documentElements,elementId){
 function _getElementById(idToFind,documentElements) {
     idToFind = unref(idToFind); //in case the id is reactive
     const foundElement = documentElements.find(element => element.id === idToFind);
+    if(foundElement===undefined){
+        throw new Error("no Element with id "+idToFind)
+    }
     return foundElement;
 };
 

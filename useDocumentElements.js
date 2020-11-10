@@ -3,7 +3,7 @@ import {_getElementById,
         _getElementPositionOnCanvas, 
         _getElementsPointIsIn,
         _getParentChain,
-        //_getChildrenOf,
+        _getElementChildren,
         _getParentOf} from './documentElementsHelpers.js'
 import documentElementData from './documentElementData.js'
 
@@ -123,16 +123,26 @@ function useDocumentElements() {
         dropTarget.children.push(storeElement);
     }
 
+    // ---------------
+    // Getters -------
+    // ---------------
+    function getElementChildren(elementId){
+        _getElementChildren(elementId);
+    }
 
     return {
+        //↓data
         documentElements,
-        setSelectedElementId,
-        unsetSelectedElementId,
         selectedElementId,
         selectedElement,
+        //↓getters
+        getElementChildren,
+        //↓actions
+        setSelectedElementId,
+        unsetSelectedElementId,
         moveSelectedElementBy,
         resizeSelectedElementBy,
-        dropElement
+        dropElement,
     }
 }
 
