@@ -1,4 +1,6 @@
 import documentElementResizer from './vDocumentElementResizer.js'
+import { getAbsolutePosition, getElementById } from './useDocumentElements.js'
+import {toRefs, computed} from './vue.esm-browser.js'
 
 /**
  * Holds all the resizer handles. See (documentElementResizer.js)
@@ -11,8 +13,29 @@ export default {
         'document-element-resizer':documentElementResizer
     },
     props:[
-        'selectedElement'
+        'selectedElementId'
     ],
+    setup:function(props,context){
+        const {selectedElementId} = toRefs(props);
+        
+        const styleObject = computed(function(){
+            if (!selectedElementId) { return }
+            const { width, height } = getElementById(selectedElementId)
+            const absolutePosition = getAbsolutePosition(selectedElementId);
+
+            return {
+                'height': height + 'px',
+                'width': width + 'px',
+                'top': absolutePosition.pos_y + 'px',
+                'left': absolutePosition.pos_x + 'px',
+                'position': 'absolute',
+                'background-color': 'rgba(0,100,250,0.3)',
+                'pointer-events': 'none'
+            }
+        });
+
+        return {styleObject}
+    },
     data:function(){
         return {
             resizerHandles: [
@@ -49,20 +72,20 @@ export default {
             ]
         }
     },
-    computed:{
-        styleObject:function(){
-            if(!this.selectedElement){return}
-            return{
-                'height':this.selectedElement.height+'px',
-                'width':this.selectedElement.width+'px',
-                'top': this.selectedElement.pos_y+'px',
-                'left':this.selectedElement.pos_x+'px',
-                'position':'absolute',
-                'background-color':'rgba(0,100,250,0.3)',
-                'pointer-events':'none'
-            }
-        }
-    },
+    // computed:{ //TODO: To setup, set a computed for the absolute position on canvas. 
+    //     styleObject:function(){
+    //         if(!this.selectedElement){return}
+    //         return{
+    //             'height':this.selectedElement.height+'px',
+    //             'width':this.selectedElement.width+'px',
+    //             'top': this.selectedElement.pos_y+'px',
+    //             'left':this.selectedElement.pos_x+'px',
+    //             'position':'absolute',
+    //             'background-color':'rgba(0,100,250,0.3)',
+    //             'pointer-events':'none'
+    //         }
+    //     }
+    // },
     template:`
     <div :style="styleObject">
         <document-element-resizer v-for="resizerHandle in resizerHandles" :resizerHandleSpec="resizerHandle" ></document-element-resizer>         

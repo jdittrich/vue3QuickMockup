@@ -1,8 +1,6 @@
 import { setPointerEventStrategy } from './pointerEventProxy.js'
 import { elementDragStrategy } from './elementDragStrategy.js'
-import useDocumentElements from './useDocumentElements.js'
-
-const {setSelectedElementId} = useDocumentElements()
+import  { setSelectedElementId, getElementChildren }  from './useDocumentElements.js'
 
 /*
 A document Element. Despite being meant to represent the content that users manipulate it is currently
@@ -29,11 +27,11 @@ export default {
                 'outline':'1px solid green',
                 'background':'rgba(100,140,180,0.5)'
             }
-        } /*, // if we call a getter in computed we might get child elements and and caching 
-        childElements(){
+        }, 
+        childElements:function(){
             //or passing child Id array
-            return fictionalgettermethod(this.id) //gets children of elemenet with that id
-        }*/
+            return getElementChildren(this.rectSpec.id) //gets children of elemenet with that id
+        }
     },
     methods:{
         onmousedown:function(evt){
@@ -46,7 +44,7 @@ export default {
     {{rectSpec.id}}
         <div class="documentElementChildrenContainer">
             <document-element 
-                v-for="documentElement in rectSpec.children" 
+                v-for="documentElement in childElements" 
                 :rectSpec = "documentElement"
                 :key="documentElement.id">
             </document-element> 

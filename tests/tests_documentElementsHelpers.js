@@ -1,7 +1,7 @@
 import documentElementData from './../documentElementData.js'
 import {
     _getElementById,
-    //_getFlatDocumentData,
+    _getElementChildren,
     _getElementPositionOnCanvas,
     _getParentChain,
     _isPointInElement,
@@ -24,6 +24,11 @@ describe('_getElementById', function () {
         ).to.equal(
             documentObject
         );
+    });
+    it('should throw an error for a non existing id', function () {
+        chai.expect(
+            () => { _getElementById("iShouldNotExist", documentElementData) } //wrap throwing function in function, see https://stackoverflow.com/questions/14966821/
+        ).to.throw(/id/);
     });
 });
 
@@ -61,12 +66,28 @@ describe('_getParentChain', function () {
 
 describe('_getParentChain', function () {
     it('should give the absolute position  by adding all offsets', function () {
-        chai.expect(_getElementPositionOnCanvas(documentElementData, '99')).to.eql({ 'pos_x': 60, 'pos_y': 60 });
+        chai.expect(_getElementPositionOnCanvas('99',documentElementData)).to.eql({ 'pos_x': 60, 'pos_y': 60 });
+    })
+});
+
+describe('_getElementChildren', function () {
+    const rootNodeChildren = [
+        _getElementById("1", documentElementData),
+        _getElementById("2", documentElementData),
+        _getElementById("3", documentElementData)
+    ];
+
+
+    it('should return the element’s children', function () {
+        chai.expect(_getElementChildren("documentElementsRootNode",documentElementData)).to.eql(rootNodeChildren);
+    });
+
+    it('should return an empty array children for an element without children',function(){
+        chai.expect(_getElementChildren("2",documentElementData)).to.eql([]);
     })
 });
 
 describe('_elementsPointIsIn', function () {
-
     const pointIn99 = { pos_x: 62, pos_y: 65 }
     const elements99PointIsIn = [
         _getElementById("documentElementsRootNode",documentElementData),

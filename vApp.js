@@ -1,8 +1,18 @@
+import {computed} from './vue.esm-browser.js'
+
 import documentElement from './vDocumentElement.js'
 import documentElementResizers from './vDocumentElementResizers.js'
-import useDocumentElements from './useDocumentElements.js'
+
+import {documentElements,
+        dragCopies,
+        selectedElementId,
+        unsetSelectedElementId,
+        getRootNode,
+        getElementChildren} from './useDocumentElements.js'
 
 import {pointerEventProxy, unsetPointerEventStrategy} from './pointerEventProxy.js'
+
+
 
 export default {
     name:'app',
@@ -10,15 +20,18 @@ export default {
         'document-element':documentElement,
         'document-element-resizers': documentElementResizers
     },
-    setup(props, context){
-        const { documentElements, setSelectedElementId, unsetSelectedElementId, selectedElementId, selectedElement  } = useDocumentElements();
+    setup(props, context){  
+        const childElements = computed(function(){
+            const rootNode = getRootNode();
+            const children = getElementChildren(rootNode.id);
+            return children;
+        })
         
         return {
             documentElements, 
-            setSelectedElementId,
-            unsetSelectedElementId,
+            dragCopies,
             selectedElementId,
-            selectedElement
+            childElements
         }
     },
     data: function(){
@@ -34,7 +47,7 @@ export default {
     methods:{
         mousedown(event){
             if(event.target === this.$el){ //click on background. Should probably be outsourced to a separate background element and its reactions
-                this.unsetSelectedElementId();
+                unsetSelectedElementId();
                 unsetPointerEventStrategy();
             }
             pointerEventProxy.down(event);          
@@ -57,12 +70,17 @@ export default {
 
       
         <document-element 
-            v-for="documentElement in documentElements.children" 
+            v-for="documentElement in childElements" 
             :rectSpec="documentElement"
             :key="documentElement.id"
         ></document-element>
         
-        <document-element-resizers v-if="selectedElement" :selectedElement="selectedElement"></document-element-resizers>
+        <document-element
+            v-for="documentElement in dragCopies"
+            rectSpec="documentElement"
+            key="documentElement.id"></document-element>
+        
+        <document-element-resizers v-if="selectedElementId" :selectedElementId="selectedElementId"></document-element-resizers>
 
     </div>
     `

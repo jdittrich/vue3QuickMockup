@@ -1,7 +1,5 @@
-import useDocumentElements from './useDocumentElements.js'
+import {documentElements,moveSelectedElementBy} from './useDocumentElements.js'
 
-
-let documentElements = useDocumentElements();
 
 /**
  * pointer strategy (called via pointerEventProxy)
@@ -9,12 +7,14 @@ let documentElements = useDocumentElements();
  */
 
 let elementDragStrategy = {
-    down:function() { },
+    down:function() {
+        //documentElements.startDrag()
+    },
     move: function (qmEvent, options){
         if (!qmEvent.isDragging){ return };
         const pos_x_diff = qmEvent.pos_x_diff;
         const pos_y_diff = qmEvent.pos_y_diff;
-        documentElements.moveSelectedElementBy({ pos_x_diff, pos_y_diff });
+        moveSelectedElementBy({ pos_x_diff, pos_y_diff });
     },
     up: function (qmEvent, options) {
         const postionOfUp = {
@@ -22,7 +22,7 @@ let elementDragStrategy = {
             pos_y:qmEvent.pos_y
 
         }
-        documentElements.dropElement(postionOfUp)
+        //documentElements.dropElement(postionOfUp);  
     }
 };
 
