@@ -72,20 +72,6 @@ export default {
             ]
         }
     },
-    // computed:{ //TODO: To setup, set a computed for the absolute position on canvas. 
-    //     styleObject:function(){
-    //         if(!this.selectedElement){return}
-    //         return{
-    //             'height':this.selectedElement.height+'px',
-    //             'width':this.selectedElement.width+'px',
-    //             'top': this.selectedElement.pos_y+'px',
-    //             'left':this.selectedElement.pos_x+'px',
-    //             'position':'absolute',
-    //             'background-color':'rgba(0,100,250,0.3)',
-    //             'pointer-events':'none'
-    //         }
-    //     }
-    // },
     template:`
     <div :style="styleObject">
         <document-element-resizer v-for="resizerHandle in resizerHandles" :resizerHandleSpec="resizerHandle" ></document-element-resizer>         
