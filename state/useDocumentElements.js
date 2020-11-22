@@ -2,8 +2,9 @@ import {
     reactive,
     ref,
     computed,
-    watch
-} from './vue.esm-browser.js'
+    unref,
+    toRaw
+} from '../vue.esm-browser.js'
 import {
     _getElementById,
     _getElementPositionOnCanvas,
@@ -13,16 +14,20 @@ import {
     _getElementChildren,
     _getParentOf
 } from './documentElementsHelpers.js'
-import documentElementData from './documentElementData.js'
+
+import documentElementData from '../tests/documentElementData.js'
 
 
 // STATE
-let documentElements = reactive(documentElementData);
+const documentElements  = reactive(documentElementData);
 
 const selectedElementId = ref(null);
 
-let dragCopies = reactive([]);
+const copiesToDrag      = reactive([]); //TODO rename to "elementsInDrag"
 
+const elementsToHide    = computed(function(){
+    return copiesToDrag.map(element=>element.id)
+}); 
 
 //SETTERS
 function setSelectedElementId(newSelectedElementId) {
@@ -32,6 +37,8 @@ function setSelectedElementId(newSelectedElementId) {
 function unsetSelectedElementId() {
     selectedElementId.value = null
 }
+
+
 
 //MANIPULATION
 function moveSelectedElementBy(pos_diff) {
@@ -102,9 +109,6 @@ function dropElement(point) {
 
 
     // moveToNewParent(toMove,Parent,Offset);
-
-
-
     //Problem: The current state includes the dragged element. The point under the mouse cursor 
     // and the dimensions of the dragged element are in... the dragged element itself!
     // this messes all up. So there needs to be some way to represent state. 
@@ -185,35 +189,41 @@ const selectedElement = computed(() => {
 // ACTIONS PROXIED
 // --------
 // watch selectedElementId, when that changes, call this thing:
-function setCopyToManipulate() {
+function setDragCopy() {
     //copy to drag copies
     const selectedElement = _getElementById(selectedElementId, documentElements);
     const {
         pos_x,
         pos_y
     } = _getElementPositionOnCanvas(selectedElementId, documentElements)
-    dragCopies.push({
-        'pos_x': pos_x,
-        'pos_y': pos_y,
-        'width': selectedElement.width,
-        'height': selectedElement.height,
-        'children': selectedElement.children //which is not a copy, but a reference!
+    copiesToDrag.push(
+        reactive({
+            'pos_x': pos_x,
+            'pos_y': pos_y,
+            'width': selectedElement.width,
+            'height': selectedElement.height,
+            'children': selectedElement.children, //which is not a copy, but a reference!
+            'id':selectedElement.id
+        })
+    );
+}
+
+function unsetDragCopies(){
+    copiesToDrag.splice(0, copiesToDrag.length);
+}
+
+function dragElementBy(pos_diff) {
+    copiesToDrag.forEach(element => {
+        element.pos_x = element.pos_x + pos_diff.pos_x_diff,
+        element.pos_y = element.pos_y + pos_diff.pos_y_diff
     });
 }
 
-function doDragElement(pos_diff) {
-    dragCopies.forEach(element => {
-        element.pos_x = element.pos_x + pos_diff.pos_x,
-            element.pos_y = element.pos_y + pos_diff.pos_y
-    });
+function startDragElement(){
+    setDragCopy();
 }
-
-
 function endDragElement() {
-
-    // write to qm document state
-
-    // clean drag copies
+    unsetDragCopies();
 }
 
 
@@ -225,16 +235,21 @@ export {
     documentElements,
     selectedElementId,
     selectedElement,
-    dragCopies,
+    copiesToDrag,
+    elementsToHide,
     //↓getters
     getElementById,
     getElementChildren,
     getAbsolutePosition,
     getRootNode,
     //↓actions
+    startDragElement,
+    dragElementBy,
+    endDragElement,
     setSelectedElementId,
     unsetSelectedElementId,
     moveSelectedElementBy,
     resizeSelectedElementBy,
-    dropElement
+    dropElement,
+
 }

@@ -1,16 +1,17 @@
-import {computed} from './vue.esm-browser.js'
+import {computed} from '../vue.esm-browser.js'
 
-import documentElement from './vDocumentElement.js'
-import documentElementResizers from './vDocumentElementResizers.js'
+import documentElement from '../components/vDocumentElement.js'
+import documentElementResizers from '../components/vDocumentElementResizers.js'
 
 import {documentElements,
-        dragCopies,
+        copiesToDrag,
+        elementsToHide,
         selectedElementId,
         unsetSelectedElementId,
         getRootNode,
-        getElementChildren} from './useDocumentElements.js'
+        getElementChildren} from '../state/useDocumentElements.js'
 
-import {pointerEventProxy, unsetPointerEventStrategy} from './pointerEventProxy.js'
+import {pointerEventProxy, unsetPointerEventStrategy} from '../strategies/pointerEventProxy.js'
 
 
 
@@ -26,10 +27,10 @@ export default {
             const children = getElementChildren(rootNode.id);
             return children;
         })
-        
         return {
             documentElements, 
-            dragCopies,
+            copiesToDrag,
+            elementsToHide,
             selectedElementId,
             childElements
         }
@@ -59,6 +60,7 @@ export default {
             pointerEventProxy.up(event)
         }, 
     },
+    //TODO: Move this to "canvas", encapsulate the "layers" in their own divs. 
     template:`
     <div style='width:95%; height:95%; background-color:#ABC; position:absolute;'
 
@@ -68,20 +70,23 @@ export default {
         >
         Selected: {{selectedElementId}}
 
-      
-        <document-element 
-            v-for="documentElement in childElements" 
-            :rectSpec="documentElement"
-            :key="documentElement.id"
-        ></document-element>
-        
-        <document-element
-            v-for="documentElement in dragCopies"
-            rectSpec="documentElement"
-            key="documentElement.id"></document-element>
-        
-        <document-element-resizers v-if="selectedElementId" :selectedElementId="selectedElementId"></document-element-resizers>
-
+        <div style="position:absolute; width:0; height:0; top:0; left:0">
+            <document-element
+                v-for="documentElement in childElements"
+                :rectSpec="documentElement"
+                :key="documentElement.id"
+            ></document-element>
+        </div>
+        <div style="position:absolute; width:0; height:0; top:0; left:0; pointer-events:none">
+            <document-element 
+                v-for="documentElement in copiesToDrag" 
+                :rectSpec="documentElement"
+                :key="documentElement.id"
+            ></document-element>
+        </div>
+        <div style="position:absolute; width:0; height:0; top:0; left:0">
+            <document-element-resizers v-if="selectedElementId" :selectedElementId="selectedElementId"></document-element-resizers>
+        </div>
     </div>
     `
 }

@@ -1,6 +1,6 @@
-import { setPointerEventStrategy } from './pointerEventProxy.js'
-import { elementDragStrategy } from './elementDragStrategy.js'
-import  { setSelectedElementId, getElementChildren }  from './useDocumentElements.js'
+import { setPointerEventStrategy, pointerEventProxy } from '../strategies/pointerEventProxy.js'
+import { elementDragStrategy } from '../strategies/elementDragStrategy.js'
+import { setSelectedElementId, getElementChildren }  from '../state/useDocumentElements.js'
 
 /*
 A document Element. Despite being meant to represent the content that users manipulate it is currently
@@ -13,9 +13,6 @@ export default {
     props:{
         rectSpec: Object
     },
-    emits: [
-        'mousedown-on-document-element' //I think this can be deleted
-    ],
     computed:{
         styleObject:function(){
             return{
@@ -30,13 +27,17 @@ export default {
         }, 
         childElements:function(){
             //or passing child Id array
-            return getElementChildren(this.rectSpec.id) //gets children of elemenet with that id
+            return getElementChildren(this.rectSpec.id) //gets children of element with that id
         }
     },
     methods:{
-        onmousedown:function(evt){
+        onmousedown: function (evt) { //TODO: useDragdrop
             setSelectedElementId(this.rectSpec.id)
-            setPointerEventStrategy(elementDragStrategy)  
+            setPointerEventStrategy(elementDragStrategy);
+            pointerEventProxy.down(evt);
+        },
+        onmouseup: function (evt) { //TODO: useDragdrop
+            console.log("dropped on ", this.rectSpec.id) //not working yet
         }
     },
     template:`

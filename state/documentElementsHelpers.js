@@ -1,5 +1,5 @@
-import {treeReduce,treeReduceContext,treeMap,treeFind} from './lib/treeFunctions.js'
-import { unref,toRaw,readonly } from './vue.esm-browser.js'
+
+import { unref,toRaw,readonly } from '../vue.esm-browser.js'
 
 
 /**
@@ -137,7 +137,6 @@ function _getParentChain(documentElements, idElementToFind) {
 
 function _getElementChildren(id, documentElements){
     const parentElement = _getElementById(id,documentElements);
-    console.log(toRaw(parentElement.children));
     const childElements = parentElement.children.map(childId => _getElementById(childId,documentElements));
     
 

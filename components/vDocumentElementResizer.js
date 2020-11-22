@@ -1,6 +1,6 @@
-import {toRaw} from './vue.esm-browser.js'
-import {setPointerEventStrategy} from './pointerEventProxy.js'
-import {elementResizeStrategy} from './elementResizeStrategy.js'
+import {toRaw} from './../vue.esm-browser.js'
+import {setPointerEventStrategy} from '../strategies/pointerEventProxy.js'
+import {elementResizeStrategy} from '../strategies/elementResizeStrategy.js'
 
 /**
  * document-element-resizer represents one resizer handle

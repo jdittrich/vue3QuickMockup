@@ -1,6 +1,6 @@
 import documentElementResizer from './vDocumentElementResizer.js'
-import { getAbsolutePosition, getElementById } from './useDocumentElements.js'
-import {toRefs, computed} from './vue.esm-browser.js'
+import { getAbsolutePosition, getElementById } from '../state/useDocumentElements.js'
+import {toRefs, computed} from '../vue.esm-browser.js'
 
 /**
  * Holds all the resizer handles. See (documentElementResizer.js)
@@ -19,7 +19,10 @@ export default {
         const {selectedElementId} = toRefs(props);
         
         const styleObject = computed(function(){
-            if (!selectedElementId) { return }
+            if (!selectedElementId) { 
+                return 
+            };
+
             const { width, height } = getElementById(selectedElementId)
             const absolutePosition = getAbsolutePosition(selectedElementId);
 

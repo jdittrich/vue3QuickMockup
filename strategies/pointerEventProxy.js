@@ -9,7 +9,7 @@
  * @param {boolean} customProperties.isDragging - is a drag current going on?
  * @param {object} customProperties.pos_down - position of the mousedown that started the drag (pox_x, pos_y)
  */
-function createQmEvent(nativeEvent,customProperties){
+function createQmEvent(nativeEvent,customProperties = {}){
     const qmPointerEvent = {
         pos_x_diff:nativeEvent.movementX,
         pos_y_diff:nativeEvent.movementY,
@@ -21,13 +21,16 @@ function createQmEvent(nativeEvent,customProperties){
         shiftKey: nativeEvent.shiftKey,
         originalEvent: nativeEvent
     }
-
-    if (customProperties.downPoint){
-        qmPointerEvent.downPoint_pos_x = downPoint.pos_x;
-        qmPointerEvent.downPoint_pos_y = downPoint.pos_y; 
-    }
     
-    qmPointerEvent.isDragging = isDragging
+    qmPointerEvent.isDragging = customProperties.isDragging || null
+    
+    if (customProperties.pos_down){
+        qmPointerEvent.pos_down = {
+            pos_x:customProperties.pos_down.pos_x,
+            pos_y:customProperties.pos_down.pos_y
+            
+        };
+    }
 
     return qmPointerEvent;
 }
@@ -36,8 +39,8 @@ function createQmEvent(nativeEvent,customProperties){
 //variables shared across events -- local state
 //last mousedown for move and up events
 let pos_down = {
-    clientpos_x : null,
-    clientpos_y : null
+    pos_x : null,
+    pos_y : null
 }
 
 //is dragging for move and up events
@@ -54,8 +57,8 @@ let pointerEventProxy = {
 
         //set shared state variables
         pos_down = {
-            clientpos_x: nativeEvent.clientX,
-            clientpos_y: nativeEvent.clientY
+            pos_x: nativeEvent.clientX,
+            pos_y: nativeEvent.clientY
         };
         isDragging = true;
 
@@ -99,7 +102,7 @@ let strategyPointerEvent = emptyStrategy;
 
 const setPointerEventStrategy = function (newStrategyPointerEvent, newOptions){
     strategyPointerEvent = newStrategyPointerEvent
-    options = newOptions
+    options = newOptions;
 }
 
 const unsetPointerEventStrategy = function(){

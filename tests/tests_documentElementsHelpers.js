@@ -7,7 +7,7 @@ import {
     _isPointInElement,
     _getElementsPointIsIn,
     _getParentOf
-} from './../documentElementsHelpers.js'
+} from './../state/documentElementsHelpers.js'
 
 const it = Mocha.it;
 const describe = Mocha.describe;
