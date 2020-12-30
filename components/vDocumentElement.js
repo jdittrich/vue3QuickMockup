@@ -1,6 +1,9 @@
 import { setPointerEventStrategy, pointerEventProxy } from '../strategies/pointerEventProxy.js'
 import { elementDragStrategy } from '../strategies/elementDragStrategy.js'
-import { setSelectedElementId, getElementChildren }  from '../state/useDocumentElements.js'
+import { getElementChildren }  from '../state/useDocumentElements.js'
+import { useContentSelection} from '../state/useSelectedElements.js'
+
+const {contentSelection, setContentSelection} = useContentSelection(); 
 
 /*
 A document Element. Despite being meant to represent the content that users manipulate it is currently
@@ -27,14 +30,14 @@ export default {
         }, 
         childElements:function(){
             //or passing child Id array
-            return getElementChildren(this.rectSpec.id) //gets children of element with that id
+            return getElementChildren(this.rectSpec) //gets children of element with that id
         }
     },
     methods:{
         onmousedown: function (evt) { //TODO: useDragdrop
-            setSelectedElementId(this.rectSpec.id)
+            setContentSelection(this.rectSpec)
             setPointerEventStrategy(elementDragStrategy);
-            pointerEventProxy.down(evt);
+            pointerEventProxy.down(evt,this.rectSpec);
         },
         onmouseup: function (evt) { //TODO: useDragdrop
             console.log("dropped on ", this.rectSpec.id) //not working yet

@@ -17,19 +17,18 @@ import {
 
 import documentElementData from '../tests/documentElementData.js'
 
+import useContentSelection from './useSelectedElements.js'
+const {
+    contentSelection, 
+    setContentSelection,
+    clearContentSelection} = useContentSelection();  
 
-// STATE
+// DOCUMENT STATE
 const documentElements  = reactive(documentElementData);
 
+// SELECTION STATE
 const selectedElementId = ref(null);
 
-const copiesToDrag      = reactive([]); //TODO rename to "elementsInDrag"
-
-const elementsToHide    = computed(function(){
-    return copiesToDrag.map(element=>element.id)
-}); 
-
-//SETTERS
 function setSelectedElementId(newSelectedElementId) {
     selectedElementId.value = newSelectedElementId;
 }
@@ -38,7 +37,12 @@ function unsetSelectedElementId() {
     selectedElementId.value = null
 }
 
+//DRAG STATE
+const copiesToDrag      = reactive([]); //TODO rename to "elementsInDrag"
 
+const elementsToHide    = computed(function(){
+    return copiesToDrag.map(element=>element.id)
+});
 
 //MANIPULATION
 function moveSelectedElementBy(pos_diff) {
@@ -153,8 +157,8 @@ function getElementById(elementId) {
     return element;
 }
 
-function getElementChildren(elementId) {
-    const elementChildren = _getElementChildren(elementId, documentElements);
+function getElementChildren(element) {
+    const elementChildren = _getElementChildren(element, documentElements);
     return elementChildren;
 }
 
@@ -163,14 +167,14 @@ function getRootNode() {
     return rootNode;
 }
 
-function getAbsolutePosition(elementId) {
-    const absolutePosition = _getElementPositionOnCanvas(elementId, documentElements);
+function getAbsolutePosition(element) {
+    const absolutePosition = _getElementPositionOnCanvas(element, documentElements);
     return absolutePosition;
 }
 
 
 
-
+/*
 const selectedElement = computed(() => {
     if (!selectedElementId.value) {
         return null
@@ -183,12 +187,13 @@ const selectedElement = computed(() => {
 
     //return Object.assign({},selectedElementData,{pos_asb});
 });
-
+*/
 
 // ---------
 // ACTIONS PROXIED
 // --------
 // watch selectedElementId, when that changes, call this thing:
+/*
 function setDragCopy() {
     //copy to drag copies
     const selectedElement = _getElementById(selectedElementId, documentElements);
@@ -206,7 +211,7 @@ function setDragCopy() {
             'id':selectedElement.id
         })
     );
-}
+}*/
 
 function unsetDragCopies(){
     copiesToDrag.splice(0, copiesToDrag.length);
@@ -233,22 +238,23 @@ function endDragElement() {
 export {
     //↓data
     documentElements,
-    selectedElementId,
-    selectedElement,
-    copiesToDrag,
-    elementsToHide,
+    //selectedElementId,
+    //selectedElement,
+    //copiesToDrag,
+    //elementsToHide,
     //↓getters
     getElementById,
     getElementChildren,
     getAbsolutePosition,
     getRootNode,
     //↓actions
-    startDragElement,
-    dragElementBy,
-    endDragElement,
-    setSelectedElementId,
-    unsetSelectedElementId,
+    //startDragElement,
+    //dragElementBy,
+    //endDragElement,
+    //setSelectedElementId,
+    //unsetSelectedElementId,
     moveSelectedElementBy,
+    moveElementBy,
     resizeSelectedElementBy,
     dropElement,
 

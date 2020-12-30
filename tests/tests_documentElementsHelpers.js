@@ -1,4 +1,4 @@
-import documentElementData from './../documentElementData.js'
+import documentElementData from './documentElementData.js'
 import {
     _getElementById,
     _getElementChildren,
@@ -35,8 +35,9 @@ describe('_getElementById', function () {
 describe('_getParentOf', function () {
     it('should return parent', function () {
         let parent = _getElementById("1",documentElementData);
+        let child = _getElementById("99",documentElementData);
         chai.expect(
-            _getParentOf("99",documentElementData)
+            _getParentOf(child,documentElementData)
         ).to.equal(
             parent
         );
@@ -59,14 +60,17 @@ describe('_getParentChain', function () {
         _getElementById("documentElementsRootNode",documentElementData),
     ]
     it('should return the parents+ element ', function () {
-        chai.expect(_getParentChain(documentElementData, '99')).to.eql(parentsOf99);
+        const element99 = _getElementById("99",documentElementData);
+        chai.expect(_getParentChain(element99,documentElementData)).to.eql(parentsOf99);
     })
 
 });
 
 describe('_getParentChain', function () {
+    const element = _getElementById("99",documentElementData);
+
     it('should give the absolute position  by adding all offsets', function () {
-        chai.expect(_getElementPositionOnCanvas('99',documentElementData)).to.eql({ 'pos_x': 60, 'pos_y': 60 });
+        chai.expect(_getElementPositionOnCanvas(element,documentElementData)).to.eql({ 'pos_x': 60, 'pos_y': 60 });
     })
 });
 
@@ -79,11 +83,13 @@ describe('_getElementChildren', function () {
 
 
     it('should return the element’s children', function () {
-        chai.expect(_getElementChildren("documentElementsRootNode",documentElementData)).to.eql(rootNodeChildren);
+        const root = _getElementById("documentElementsRootNode",documentElementData)
+        chai.expect(_getElementChildren(root,documentElementData)).to.eql(rootNodeChildren);
     });
 
     it('should return an empty array children for an element without children',function(){
-        chai.expect(_getElementChildren("2",documentElementData)).to.eql([]);
+        const noChildren = _getElementById("2",documentElementData);
+        chai.expect(_getElementChildren(noChildren,documentElementData)).to.eql([]);
     })
 });
 

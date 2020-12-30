@@ -13,18 +13,19 @@ export default {
         'document-element-resizer':documentElementResizer
     },
     props:[
-        'selectedElementId'
+        //'selectedElementId',
+        'selectedElement'
     ],
     setup:function(props,context){
-        const {selectedElementId} = toRefs(props);
+        const {selectedElement} = toRefs(props);
         
         const styleObject = computed(function(){
-            if (!selectedElementId) { 
+            if (!selectedElement.value) { 
                 return 
             };
 
-            const { width, height } = getElementById(selectedElementId)
-            const absolutePosition = getAbsolutePosition(selectedElementId);
+            const { width, height } = selectedElement;
+            const absolutePosition = getAbsolutePosition(selectedElement);
 
             return {
                 'height': height + 'px',

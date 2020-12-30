@@ -4,12 +4,17 @@ import documentElement from '../components/vDocumentElement.js'
 import documentElementResizers from '../components/vDocumentElementResizers.js'
 
 import {documentElements,
-        copiesToDrag,
-        elementsToHide,
-        selectedElementId,
-        unsetSelectedElementId,
+        //copiesToDrag,
+        //elementsToHide,
+        //selectedElementId,
+        //unsetSelectedElementId,
         getRootNode,
-        getElementChildren} from '../state/useDocumentElements.js'
+        getElementChildren} from '../state/useDocumentElements.js';
+
+import {useDragAndDrop} from '../state/useDragAndDrop.js'
+
+
+
 
 import {pointerEventProxy, unsetPointerEventStrategy} from '../strategies/pointerEventProxy.js'
 
@@ -22,16 +27,23 @@ export default {
         'document-element-resizers': documentElementResizers
     },
     setup(props, context){  
+        
+        const {draggedProxy, contentSelectionProxy} = useDragAndDrop();
+        
+        
         const childElements = computed(function(){
             const rootNode = getRootNode();
-            const children = getElementChildren(rootNode.id);
+            const children = getElementChildren(rootNode);
             return children;
-        })
+        });
+
         return {
+            draggedProxy,
+            contentSelectionProxy,
             documentElements, 
-            copiesToDrag,
-            elementsToHide,
-            selectedElementId,
+            // copiesToDrag,
+            // elementsToHide,
+            // selectedElementId,
             childElements
         }
     },
@@ -68,7 +80,7 @@ export default {
         v-on:mousemove.left="mousemove"
         v-on:mouseup = "mouseup"
         >
-        Selected: {{selectedElementId}}
+        Selected: {{contentSelectionProxy.id}}
 
         <div style="position:absolute; width:0; height:0; top:0; left:0">
             <document-element
@@ -78,14 +90,14 @@ export default {
             ></document-element>
         </div>
         <div style="position:absolute; width:0; height:0; top:0; left:0; pointer-events:none">
-            <document-element 
-                v-for="documentElement in copiesToDrag" 
-                :rectSpec="documentElement"
+            <document-element  
+                v-if="draggedProxy"
+                :rectSpec="draggedProxy"
                 :key="documentElement.id"
             ></document-element>
         </div>
         <div style="position:absolute; width:0; height:0; top:0; left:0">
-            <document-element-resizers v-if="selectedElementId" :selectedElementId="selectedElementId"></document-element-resizers>
+            <document-element-resizers v-if="contentSelectionProxy" :selectedElement="contentSelectionProxy"></document-element-resizers>
         </div>
     </div>
     `

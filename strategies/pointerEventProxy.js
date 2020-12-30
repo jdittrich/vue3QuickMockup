@@ -53,7 +53,7 @@ let options = null;
 
 //these is the proxy to the strategies. Proxies  are not changeable, only the strategies.
 let pointerEventProxy = {
-    down:function(nativeEvent){
+    down:function(nativeEvent,...rest){
 
         //set shared state variables
         pos_down = {
@@ -62,23 +62,22 @@ let pointerEventProxy = {
         };
         isDragging = true;
 
-
         const qmevent = createQmEvent(nativeEvent, {
             "isDragging":isDragging,
             "pos_down":pos_down
         });
 
-        strategyPointerEvent.down(qmevent);
+        strategyPointerEvent.down(qmevent, ...rest);
     },
-    move:function(nativeEvent){ 
+    move:function(nativeEvent, ...rest){
         const qmevent = createQmEvent(nativeEvent, {
             "isDragging": isDragging,
             "pos_down": pos_down
         });
 
-        strategyPointerEvent.move(qmevent,options)
+        strategyPointerEvent.move(qmevent,...rest)
     },
-    up: function (nativeEvent){
+    up: function (nativeEvent, ...rest){
         isDragging = false;
 
         const qmevent = createQmEvent(nativeEvent, {
@@ -86,7 +85,7 @@ let pointerEventProxy = {
             "pos_down": pos_down
         });
 
-        strategyPointerEvent.up(qmevent,options);
+        strategyPointerEvent.up(qmevent,...rest);
     }
 }
 
