@@ -1,8 +1,6 @@
 import {
     reactive,
-    ref,
     computed,
-    unref,
     toRaw
 } from '../vue.esm-browser.js'
 import {
@@ -26,23 +24,42 @@ const {
 // DOCUMENT STATE
 const documentElements  = reactive(documentElementData);
 
-// SELECTION STATE
-const selectedElementId = ref(null);
 
-function setSelectedElementId(newSelectedElementId) {
-    selectedElementId.value = newSelectedElementId;
-}
 
-function unsetSelectedElementId() {
-    selectedElementId.value = null
-}
 
+
+//----------------------------------------------------------------
 //DRAG STATE
 const copiesToDrag      = reactive([]); //TODO rename to "elementsInDrag"
 
 const elementsToHide    = computed(function(){
     return copiesToDrag.map(element=>element.id)
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //MANIPULATION
 function moveSelectedElementBy(pos_diff) {

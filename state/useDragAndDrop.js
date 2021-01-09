@@ -18,7 +18,7 @@ const {contentSelection} = useContentSelection();
 // this is the element that moves
 let draggedProxy   = ref(null);
 
-// this is the element that is NOT moved (cause the procy is)
+// this is the element that is NOT moved (cause the proxy is)
 let draggedElement = ref(null); 
 
 /**
