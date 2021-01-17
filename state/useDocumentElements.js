@@ -1,7 +1,6 @@
 import {
     reactive,
     computed,
-    toRaw
 } from '../vue.esm-browser.js'
 import {
     _getElementById,
@@ -24,58 +23,27 @@ const {
 // DOCUMENT STATE
 const documentElements  = reactive(documentElementData);
 
-
-
-
-
-//----------------------------------------------------------------
-//DRAG STATE
-const copiesToDrag      = reactive([]); //TODO rename to "elementsInDrag"
-
-const elementsToHide    = computed(function(){
-    return copiesToDrag.map(element=>element.id)
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //MANIPULATION
-function moveSelectedElementBy(pos_diff) {
-    const selectedId = selectedElementId.value;
-    moveElementBy(selectedId, pos_diff);
+function moveSelectedElementsBy(pos_diff) {
+    const selected = contentSelection;
+    moveElementsBy(selectedId, pos_diff);
 }
 
-function moveElementBy(id, pos_diff) {
+
+
+function moveElementsBy(elements, pos_diff) {
     const {
         pos_x_diff,
         pos_y_diff
     } = pos_diff;
-    const elementToMove = _getElementById(id, documentElements);
-    elementToMove.pos_x += pos_x_diff;
-    elementToMove.pos_y += pos_y_diff;
-}
+    
+    elements.forEach((element)=>{
+        elementToMove.pos_x += pos_x_diff;
+        elementToMove.pos_y += pos_y_diff;
+    });
+};
+
+
 
 //RESIZE ELEMENTS
 function resizeSelectedElementBy(pos_diff, sides) {
