@@ -23,17 +23,16 @@ import { unref,toRaw,readonly } from '../vue.esm-browser.js'
 
 /**
  * Gets the parent of a documentElement
- * @param {string} idToSearchFor 
+ * @param {documentElement} element 
  * @param {documentElements} documentElements
  * @returns {documentElement} parent
  */
-function _getParentOf(idToSearchFor, documentElements){
-    idToSearchFor = unref(idToSearchFor);
+function _getParentOf(childElement, documentElements){
     
-    const parent = documentElements.find(element => element.children.includes(idToSearchFor));
+    const parent = documentElements.find(element => 
+        element.children.includes(childElement.id)
+    );
     
-    //since the flattened array returns new objects, the the proxy ones, we need to find the "real" (reactive) parent again
-
     return parent; 
 };
 
@@ -63,7 +62,7 @@ function _getElementsPointIsIn(documentElements,point){
             pos_y: offset.pos_y + (containingElement.pos_y || 0)
         }
 
-        let childrenOfContainingElement = _getElementChildren(containingElement.id,documentElements); 
+        let childrenOfContainingElement = _getElementChildren(containingElement,documentElements); 
         let newContainingElement = childrenOfContainingElement.find(function(childElement){
                 const objectDimensionsWithOffset = {
                     width: (childElement.width || Number.POSITIVE_INFINITY),
@@ -115,28 +114,34 @@ function _isPointInElement(documentElement,point){
 /** returns all parents and their parents etc. Returns empty array if no match was found.
 *
 * @param {documentElements} documentElements  - the  qmDocument tree
-* @param {string} idElementToFind - the Id of the elements whose parents you want to get
+* @param {object} elementToFind - the Id of the elements whose parents you want to get
 * @returns {array} an array with the parents of the element and the element itself
 */
-function _getParentChain(documentElements, idElementToFind) {
-    idElementToFind = unref(idElementToFind);
+function _getParentChain(elementToFind,documentElements) {
+    // idElementToFind = unref(idElementToFind);
 
     let parentChain = [];
-    parentChain.push(_getElementById(idElementToFind,documentElements));
+    parentChain.push(elementToFind);
     
-    let parent = _getParentOf( idElementToFind, documentElements);
+    let parent = _getParentOf( elementToFind, documentElements);
     
     while(parent){
         parentChain.push(parent);
-        let nextParent = _getParentOf(parent.id,documentElements)
+        let nextParent = _getParentOf(parent,documentElements)
         parent = nextParent;
     } 
 
     return parentChain;
 }
 
-function _getElementChildren(id, documentElements){
-    const parentElement = _getElementById(id,documentElements);
+/**
+ * 
+ * @param {object} element 
+ * @param {array} documentElements 
+ * @return {array} childElement
+ */
+function _getElementChildren(element, documentElements){
+    const parentElement = element
     const childElements = parentElement.children.map(childId => _getElementById(childId,documentElements));
     
 
@@ -149,13 +154,13 @@ function _getElementChildren(id, documentElements){
 
 /** returns the absolute position of an element in the qmDocument
 * @param {documentElement} documentElements  - the  qmDocument tree
-* @param {string} id - the Id of the elements whose parents you want to get
+* @param {object} element - the element whose parents you want to get
 * @returns {object} object with absolute pos_x und pos_y
 */
-function _getElementPositionOnCanvas(id, documentElements){
-    id = unref(id);
+function _getElementPositionOnCanvas(element, documentElements){
+    // id = unref(id);
 
-    const parentChain = _getParentChain(documentElements, id);
+    const parentChain = _getParentChain(element, documentElements);
 
     const reducerXYAdd = function(accumulator, currentValue){
         return {
@@ -175,7 +180,7 @@ function _getElementPositionOnCanvas(id, documentElements){
 * @param {object} documentElements  - the  qmDocument tree
 * @returns {object} the element from the qmDocument tree matching the idToFind
 */
-function _getElementById(idToFind,documentElements) {
+function _getElementById(idToFind, documentElements) {
     idToFind = unref(idToFind); //in case the id is reactive
     const foundElement = documentElements.find(element => element.id === idToFind);
     if(foundElement===undefined){
