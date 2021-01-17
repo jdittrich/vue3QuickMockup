@@ -1,7 +1,6 @@
 import {
     onBeforeUnmount,
     computed,
-    ref,
     readonly} from '../vue.esm-browser.js'
 
 import {documentElements} from '../state/useDocumentElements.js' 
@@ -16,10 +15,10 @@ import {
 const {contentSelection} = useContentSelection();
 
 // this is the element that moves
-let draggedProxy   = ref(null);
+let draggedProxy   = reactive([]);
 
-// this is the element that is NOT moved (cause the proxy is)
-let draggedElement = ref(null); 
+// this is are the original element. It is NOT moved (cause the proxy is)
+let draggedElement = reactive([]); 
 
 /**
  * This function returns the proxy, if there is one, 
@@ -71,21 +70,21 @@ export const useDragAndDrop = function (){
      * @param {*} elementToDrag 
      */
     const createProxy = function(elementToDrag){ //set elementToDrag explicitly for now. 
-        draggedProxy.value   = generateProxyElement(elementToDrag,documentElements);
-        draggedElement.value = contentSelection;
+        draggedProxy.push(generateProxyElement(elementToDrag,documentElements));
+        draggedElement.push(contentSelection);
     };
 
     /**
      * Does teardown of the drag proxy
      */
     const removeProxy = function(){
-        draggedProxy.value   = null;
-        draggedElement.value = null;
+        draggedProxy.splice(0,draggedProxy.length); //remove all elements
+        draggedElement.splice(0, draggedElement.length);
     };
     
     function moveProxyBy(pos_diff) {
-        draggedProxy.value.pos_x = draggedProxy.value.pos_x + pos_diff.pos_x_diff,
-        draggedProxy.value.pos_y = draggedProxy.value.pos_y + pos_diff.pos_y_diff
+        draggedProxy[0].pos_x += pos_diff.pos_x_diff,
+        draggedProxy[0].pos_y += pos_diff.pos_y_diff
     }
 
     window.addEventListener('mouseup', removeProxy);
