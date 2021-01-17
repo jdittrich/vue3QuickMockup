@@ -1,6 +1,6 @@
 import { reactive } from '../vue.esm-browser.js';
 
-let contentSelection = reactive([]]);
+let contentSelection = reactive([]);
 
 export const useContentSelection = function(){
     const setContentSelection = (contentElement) => contentSelection[0] = contentElement;
