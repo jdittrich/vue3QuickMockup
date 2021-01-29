@@ -1,5 +1,6 @@
 import {
     onBeforeUnmount,
+    reactive,
     computed,
     readonly} from '../vue.esm-browser.js'
 
@@ -9,28 +10,29 @@ import {documentElements} from '../state/useDocumentElements.js'
 import {_getElementPositionOnCanvas} from '../state/documentElementsHelpers.js';
 
 import {
-    useContentSelection
+    contentSelection
 } from './useSelectedElements.js'
 
-const {contentSelection} = useContentSelection();
-
 // this is the element that moves
-let draggedProxy   = reactive([]);
+const draggedProxies   = reactive([]);
+const draggedProxiesReadonly = readonly(draggedProxies);
 
 // this is are the original element. It is NOT moved (cause the proxy is)
-let draggedElement = reactive([]); 
+const draggedElements = reactive([]);
+const draggedElementsReadonly = readonly(draggedElements);
+
 
 /**
  * This function returns the proxy, if there is one, 
  * otherwise the selected element
  * otherwise null (if there is no selected element)
  */
-let contentSelectionProxy = computed(function(){
-    if(draggedProxy){
-        return draggedProxy;
-    } else { //needs no extra branch, if no selection content selection is ref(null)
+const contentSelectionProxy = computed(function(){
+    if(draggedProxies.length>0){
+        return draggedProxies;
+    } else{ 
         return contentSelection
-    }
+    } 
 })
 
 /** 
@@ -49,57 +51,56 @@ function generateProxyElement(elementToDrag,documentElements) {
             'width': elementToDrag.width,
             'height': elementToDrag.height,
             'children': elementToDrag.children, //which is not a copy, but a reference!
-            'id':elementToDrag.id
+            'id':elementToDrag.id+"p",
+            'originalId': elementToDrag.id
         }
 
     return proxyForDrag;
 }
 
+
 /**
- * @return {object}
- * @return {object} dragProxy - the proxy copy of the element current being dragged
- * @return {object} dragElement - the element currently being dragged  
- * @return {boolean} isDragging - is there a drag in progress? 
- * @return {function} createProxy - the function to call to start a drag of the selected element
- * @return {function} removeProxy - the function to end a drag of the selected element 
+ * Setup for the drag proxy
+ * 
+ * @param {*} elementToDrag 
  */
-export const useDragAndDrop = function (){
-    /**
-     * Setup for the drag proxy
-     * 
-     * @param {*} elementToDrag 
-     */
-    const createProxy = function(elementToDrag){ //set elementToDrag explicitly for now. 
-        draggedProxy.push(generateProxyElement(elementToDrag,documentElements));
-        draggedElement.push(contentSelection);
-    };
+const createProxy = function(elementToDrag){ //set elementToDrag explicitly for now. 
+    draggedProxies.push(generateProxyElement(elementToDrag,documentElements));
+    draggedElements.push(contentSelection[0]);
+};
 
-    /**
-     * Does teardown of the drag proxy
-     */
-    const removeProxy = function(){
-        draggedProxy.splice(0,draggedProxy.length); //remove all elements
-        draggedElement.splice(0, draggedElement.length);
-    };
-    
-    function moveProxyBy(pos_diff) {
-        draggedProxy[0].pos_x += pos_diff.pos_x_diff,
-        draggedProxy[0].pos_y += pos_diff.pos_y_diff
-    }
+/**
+ * Does teardown of the drag proxy
+ */
+const removeProxy = function(){
+    draggedProxies.splice(0,draggedProxies.length); //remove all elements
+    draggedElements.splice(0, draggedElements.length);
+};
 
+
+function moveProxyBy(pos_diff) {
+    draggedProxies[0].pos_x += pos_diff.pos_x_diff,
+    draggedProxies[0].pos_y += pos_diff.pos_y_diff
+}
+
+function useDragAndDrop(){
     window.addEventListener('mouseup', removeProxy);
-    
+
     onBeforeUnmount(() => {
         window.removeEventListener('mouseup', removeProxy);
     })
-    
-    // should probably return also something to manipulate the content of the selection.
-    return {
-        draggedProxy: readonly(draggedProxy),
-        draggedElement: readonly(draggedElement),
-        contentSelectionProxy,
-        createProxy,
-        removeProxy,
-        moveProxyBy
+    return{
+        draggedProxies:draggedProxiesReadonly,
+        contentSelectionProxy
     }
+}
+    
+export { 
+    useDragAndDrop,
+    moveProxyBy, 
+    removeProxy, 
+    createProxy, 
+    contentSelectionProxy,
+    draggedElementsReadonly as draggedElements, 
+    draggedProxiesReadonly as draggedProxies
 }

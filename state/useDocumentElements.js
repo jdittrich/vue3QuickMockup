@@ -1,6 +1,7 @@
 import {
     reactive,
     computed,
+    readonly
 } from '../vue.esm-browser.js'
 import {
     _getElementById,
@@ -14,42 +15,22 @@ import {
 
 import documentElementData from '../tests/documentElementData.js'
 
-import useContentSelection from './useSelectedElements.js'
-const {
-    contentSelection, 
-    setContentSelection,
-    clearContentSelection} = useContentSelection();  
 
 // DOCUMENT STATE
-const documentElements  = reactive(documentElementData);
+const documentElements = reactive(documentElementData);
+const documentElementsReadonly = readonly(documentElements)
 
-//MANIPULATION
-function moveSelectedElementsBy(pos_diff) {
-    const selected = contentSelection;
-    moveElementsBy(selectedId, pos_diff);
-}
+function moveElementBy(elementId, pos_diff) {
+    const elementToMove = _getElementById(elementId, documentElements)
 
-
-
-function moveElementsBy(elements, pos_diff) {
     const {
         pos_x_diff,
         pos_y_diff
     } = pos_diff;
-    
-    elements.forEach((element)=>{
-        elementToMove.pos_x += pos_x_diff;
-        elementToMove.pos_y += pos_y_diff;
-    });
+
+    elementToMove.pos_x += pos_x_diff;
+    elementToMove.pos_y += pos_y_diff;
 };
-
-
-
-//RESIZE ELEMENTS
-function resizeSelectedElementBy(pos_diff, sides) {
-    const selectedId = selectedElementId.value;
-    resizeElementBy(selectedId, pos_diff, sides);
-}
 
 function resizeElementBy(id, pos_diff, sides) {
     const {
@@ -94,9 +75,9 @@ function resizeElementBy(id, pos_diff, sides) {
  * @param {number} point.pos_x - the x coordinate of the point
  * @param {number} point.pos_y - the y coordinate of the point
  */
-function dropElement(point) {
-
-
+/*
+ function dropElement(point) {
+    
     // moveToNewParent(toMove,Parent,Offset);
     //Problem: The current state includes the dragged element. The point under the mouse cursor 
     // and the dimensions of the dragged element are in... the dragged element itself!
@@ -132,6 +113,18 @@ function dropElement(point) {
     const storeElement = droppedParent.children.splice(1, droppedIndexOld)[0]
 
     dropTarget.children.push(storeElement);
+}*/
+
+function toNewParent(parentId, childId, newOffset) {
+    const parent = _getElementById(parentId);
+    const child = _getElementById(childId);
+
+    //remove child from current parent
+
+    //set newOffset
+
+    //reattach to new Parent
+
 }
 
 // ---------------
@@ -157,90 +150,13 @@ function getAbsolutePosition(element) {
     return absolutePosition;
 }
 
-
-
-/*
-const selectedElement = computed(() => {
-    if (!selectedElementId.value) {
-        return null
-    }
-
-    const selectedElementData = _getElementById(selectedElementId.value, documentElements);
-    //const absolutePosition = _getElementPositionOnCanvas(documentElements, selectedElementId.value);
-
-    return selectedElementData;
-
-    //return Object.assign({},selectedElementData,{pos_asb});
-});
-*/
-
-// ---------
-// ACTIONS PROXIED
-// --------
-// watch selectedElementId, when that changes, call this thing:
-/*
-function setDragCopy() {
-    //copy to drag copies
-    const selectedElement = _getElementById(selectedElementId, documentElements);
-    const {
-        pos_x,
-        pos_y
-    } = _getElementPositionOnCanvas(selectedElementId, documentElements)
-    copiesToDrag.push(
-        reactive({
-            'pos_x': pos_x,
-            'pos_y': pos_y,
-            'width': selectedElement.width,
-            'height': selectedElement.height,
-            'children': selectedElement.children, //which is not a copy, but a reference!
-            'id':selectedElement.id
-        })
-    );
-}*/
-
-function unsetDragCopies(){
-    copiesToDrag.splice(0, copiesToDrag.length);
-}
-
-function dragElementBy(pos_diff) {
-    copiesToDrag.forEach(element => {
-        element.pos_x = element.pos_x + pos_diff.pos_x_diff,
-        element.pos_y = element.pos_y + pos_diff.pos_y_diff
-    });
-}
-
-function startDragElement(){
-    setDragCopy();
-}
-function endDragElement() {
-    unsetDragCopies();
-}
-
-
-
-
-
 export {
     //↓data
-    documentElements,
-    //selectedElementId,
-    //selectedElement,
-    //copiesToDrag,
-    //elementsToHide,
-    //↓getters
+    documentElementsReadonly as documentElements,
     getElementById,
     getElementChildren,
     getAbsolutePosition,
     getRootNode,
-    //↓actions
-    //startDragElement,
-    //dragElementBy,
-    //endDragElement,
-    //setSelectedElementId,
-    //unsetSelectedElementId,
-    moveSelectedElementBy,
     moveElementBy,
-    resizeSelectedElementBy,
-    dropElement,
-
+    resizeElementBy,
 }

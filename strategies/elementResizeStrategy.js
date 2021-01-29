@@ -1,5 +1,4 @@
-import {resizeSelectedElementBy} from '../state/useDocumentElements.js'
-
+import {resizeElementBy} from '../state/useDocumentElements.js'
 
 /**
  * pointer strategy (called via pointerEventProxy)
@@ -14,7 +13,7 @@ const elementResizeStrategy = {
         };
         const pos_x_diff = qmevent.pos_x_diff;
         const pos_y_diff = qmevent.pos_y_diff;
-        resizeSelectedElementBy({
+        resizeElementBy({
             pos_x_diff,
             pos_y_diff
         }, options)

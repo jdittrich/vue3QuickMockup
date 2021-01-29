@@ -1,15 +1,9 @@
-import { reactive } from '../vue.esm-browser.js';
+import { reactive, readonly } from '../vue.esm-browser.js';
 
-let contentSelection = reactive([]);
+const contentSelection = reactive([]);
+const contentSelectionReadonly = readonly(contentSelection);
 
-export const useContentSelection = function(){
-    const setContentSelection = (contentElement) => contentSelection[0] = contentElement;
-    const clearContentSelection = () => contentSelection.splice(0,contentSelection.length)
-    return {
-        contentSelection,
-        setContentSelection,
-        clearContentSelection
-    }    
-}
+const setContentSelection = (contentElement) => contentSelection[0] = contentElement;
+const clearContentSelection = () => contentSelection.splice(0, contentSelection.length)
 
-export default useContentSelection; 
+export { setContentSelection, clearContentSelection, contentSelectionReadonly as contentSelection }

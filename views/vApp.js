@@ -4,14 +4,11 @@ import documentElement from '../components/vDocumentElement.js'
 import documentElementResizers from '../components/vDocumentElementResizers.js'
 
 import {documentElements,
-        //copiesToDrag,
-        //elementsToHide,
-        //selectedElementId,
-        //unsetSelectedElementId,
         getRootNode,
         getElementChildren} from '../state/useDocumentElements.js';
 
-import {useDragAndDrop} from '../state/useDragAndDrop.js'
+import { clearContentSelection} from '../state/useSelectedElements.js'
+import { useDragAndDrop } from '../state/useDragAndDrop.js'
 
 
 
@@ -28,7 +25,7 @@ export default {
     },
     setup(props, context){  
         
-        const {draggedProxy, contentSelectionProxy} = useDragAndDrop();
+        const {draggedProxies, contentSelectionProxy} = useDragAndDrop();
         
         
         const childElements = computed(function(){
@@ -38,7 +35,7 @@ export default {
         });
 
         return {
-            draggedProxy,
+            draggedProxies,
             contentSelectionProxy,
             documentElements, 
             // copiesToDrag,
@@ -60,10 +57,10 @@ export default {
     methods:{
         mousedown(event){
             if(event.target === this.$el){ //click on background. Should probably be outsourced to a separate background element and its reactions
-                unsetSelectedElementId();
+                clearContentSelection();
                 unsetPointerEventStrategy();
             }
-            pointerEventProxy.down(event);          
+            //pointerEventProxy.down(event);          
         },
         mousemove(event){
             pointerEventProxy.move(event);
@@ -80,7 +77,7 @@ export default {
         v-on:mousemove.left="mousemove"
         v-on:mouseup = "mouseup"
         >
-        Selected: {{contentSelectionProxy.id}}
+        Selected: {{contentSelectionProxy[0]}}
 
         <div style="position:absolute; width:0; height:0; top:0; left:0">
             <document-element
@@ -91,9 +88,10 @@ export default {
         </div>
         <div style="position:absolute; width:0; height:0; top:0; left:0; pointer-events:none">
             <document-element  
-                v-if="draggedProxy"
-                :rectSpec="draggedProxy"
-                :key="documentElement.id"
+                v-if="draggedProxies[0]"
+                :rectSpec="draggedProxies[0]"
+                :key="draggedProxies[0].id"
+                :isProxy="true"
             ></document-element>
         </div>
         <div style="position:absolute; width:0; height:0; top:0; left:0">
@@ -101,4 +99,4 @@ export default {
         </div>
     </div>
     `
-}
+}   

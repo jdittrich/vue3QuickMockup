@@ -1,9 +1,6 @@
 import {moveElementBy} from '../state/useDocumentElements.js';
-import {useDragAndDrop} from '../state/useDragAndDrop.js';
-import {useContentSelection} from '../state/useSelectedElements.js'
-
-const {createProxy,moveProxyBy} = useDragAndDrop();
-const {contentSelection} = useContentSelection();
+import { createProxy, moveProxyBy} from '../state/useDragAndDrop.js';
+import { contentSelection} from '../state/useSelectedElements.js'
 
 // TODO
 // I need a function to move an element, not matter if it is a proxy or not: 
@@ -43,7 +40,7 @@ let elementDragStrategy = {
             pos_x_diff:pos_up.pos_x - pos_down.pos_x,
             pos_y_diff:pos_up.pos_y - pos_down.pos_y
         }
-        moveElementBy(contentSelection.id,movedDistance);
+        moveElementBy(contentSelection[0].id,movedDistance);
         //endDragElement(); 
     }
 };
