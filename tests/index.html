@@ -4,13 +4,13 @@
     <meta charset="utf-8" />
     <title>Mocha Tests</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="mocha.css" />
+    <link rel="stylesheet" href="./../lib/mocha.css" />
   </head>
   <body>
     <div id="mocha"></div>
 
-    <script src="chai.js"></script>
-    <script src="mocha.js"></script>
+    <script src="./../lib/chai.js"></script>
+    <script src="./../lib/mocha.js"></script>
 
 
     <script class="mocha-init">
@@ -19,7 +19,8 @@
       
     </script>
     <script src="tests_documentElementsHelpers.js" type="module"></script>
-    <script src="tests_lib/tests_treeFunctions.js" type="module"></script>
+    <!-- <script src="tests_lib/tests_treeFunctions.js" type="module"></script> -->
+    <!-- <script src="_vueExperiments.js" type="module"></script> -->
     <script class="mocha-exec" type="module">
       mocha.run();
     </script>
