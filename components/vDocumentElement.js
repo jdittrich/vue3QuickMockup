@@ -1,9 +1,9 @@
 import { setPointerEventStrategy, pointerEventProxy } from '../strategies/pointerEventProxy.js'
 import { elementDragStrategy } from '../strategies/elementDragStrategy.js'
+import { draggedElements} from '../state/useDragAndDrop.js'
 import { getElementChildren }  from '../state/useDocumentElements.js'
-import { useContentSelection} from '../state/useSelectedElements.js'
+import { setContentSelection} from '../state/useSelectedElements.js'
 
-const {contentSelection, setContentSelection} = useContentSelection(); 
 
 /*
 A document Element. Despite being meant to represent the content that users manipulate it is currently
@@ -11,14 +11,25 @@ very much empty and only represented by a rectangle. It can be dragged and resiz
 resides not within it. It only sets the drag strategy if a mousedown happens in it. 
 */
 
+
+
 export default {
     name:'document-element',
     props:{
-        rectSpec: Object
+        rectSpec: Object,
+        isProxy:Boolean
     },
     computed:{
+        shouldHide:function(){
+            let hidden = false
+            if(draggedElements[0]){
+                hidden = this.rectSpec.id === draggedElements[0].id && this.isProxy === false;
+            }
+            return hidden;
+        },
         styleObject:function(){
             return{
+                'display': (this.shouldHide) ? "none": "block",
                 'height':this.rectSpec.height+'px',
                 'width':this.rectSpec.width+'px',
                 'top':this.rectSpec.pos_y+'px',
@@ -45,7 +56,6 @@ export default {
     },
     template:`
     <div :style="styleObject" @mousedown.self="onmousedown">
-    {{rectSpec.id}}
         <div class="documentElementChildrenContainer">
             <document-element 
                 v-for="documentElement in childElements" 

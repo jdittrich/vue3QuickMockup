@@ -17,19 +17,19 @@ export default {
         'selectedElement'
     ],
     setup:function(props,context){
-        const {selectedElement} = toRefs(props);
+        const selectedElements = props.selectedElement;
         
         const styleObject = computed(function(){
-            if (!selectedElement.value) { 
+            if (!selectedElements  || selectedElements.length === 0) { 
                 return 
             };
 
-            const { width, height } = selectedElement;
-            const absolutePosition = getAbsolutePosition(selectedElement);
+            const { width, height } = toRefs(selectedElements[0]);
+            const absolutePosition = getAbsolutePosition(selectedElements[0]);
 
             return {
-                'height': height + 'px',
-                'width': width + 'px',
+                'height': height.value + 'px',
+                'width': width.value + 'px',
                 'top': absolutePosition.pos_y + 'px',
                 'left': absolutePosition.pos_x + 'px',
                 'position': 'absolute',
